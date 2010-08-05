@@ -1,7 +1,7 @@
 /**
  * script.js
  */
-(function(window, document, $, undefined){
+(function(window, document, undefined){
 
-})(window, document, jQuery);
+})(window, document);
 
