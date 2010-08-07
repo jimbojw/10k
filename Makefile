@@ -7,7 +7,8 @@ DIST_DIR = ${PREFIX}/dist
 DATE = `git log -1 | grep Date: | sed 's/[^:]*: *//'`
 
 JS_FILES = \
-	${SRC_DIR}/js/script.js
+	${SRC_DIR}/js/bookmarklet.js\
+	${SRC_DIR}/js/search.js
 
 JS_OUT = ${DIST_DIR}/js/script.js
 JS_MIN = ${DIST_DIR}/js/script.min.js
