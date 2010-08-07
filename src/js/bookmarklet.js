@@ -1,7 +1,7 @@
 /**
- * script.js
+ * bookmarklet.js
  */
-(function(window, document, $, undefined){
+(function($){
 
 /**
  * implementation of bookmarklet
@@ -51,6 +51,8 @@ function bookmarklet(w,d) {
 	
 	alert(buf.join(", "));
 }
+
+// attach bookmarklet to "add" link
 $('#add')
 	.attr('href', ('javascript:(' + bookmarklet + ')(window,document)').replace(/\n/g, ' '))
 	.click(function(e){
@@ -62,12 +64,5 @@ $('#add')
 		);
 	});
 
-// implementation of search
-$('form').submit(function(e){
-	e.preventDefault();
-	
-});
-
-
-})(window, document, jQuery);
+})(jQuery);
 
