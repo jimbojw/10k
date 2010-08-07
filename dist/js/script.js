@@ -1,7 +1,71 @@
 /**
+ * intro.js
+ */
+window['10kse'] = {};
+/**
+ * scanner.js
+ */
+(function(tenk){
+
+/**
+ * scans the page for index worthy content
+ */
+function scanner(window,document) {
+	
+	// initialization
+	var
+		scan = [document.body],
+		elem,
+		children,
+		child,
+		type,
+		words,
+		text,
+		word,
+		empty = /^[^a-z]*$/,
+		ignore = /button|link|noscript|script|style/i;
+	
+	var buf = [];
+	
+	// get selection - best clue
+	
+	// prioritize high-level tags (h1, etc)
+	
+	// everything else
+	var stop = /able|about|across|after|all|almost|also|among|and|any|are|because|been|but|can|cannot|could|dear|did|does|either|else|ever|every|for|from|get|got|had|has|have|her|hers|him|his|how|however|into|its|just|least|let|like|likely|may|might|most|must|neither|nor|not|off|often|only|other|our|own|rather|said|say|says|she|should|since|some|than|that|the|their|them|then|there|these|they|this|tis|too|twas|wants|was|were|what|when|where|which|while|who|whom|why|will|with|would|yet|you|your/i;
+	while (elem = scan.shift()) {
+		children = elem.childNodes;
+		for (var i=0, l=children.length; i<l; i++) {
+			child = children[i];
+			type = child.nodeType;
+			if (type === 1 && !(ignore).test(child.tagName)) {
+				scan.push(child);
+			} else if (type === 3) {
+				text = child.nodeValue;
+				words = text.split(/[^0-9a-z_]+/i);
+				for (var j=0, m=words.length; j<m; j++) {
+					word = words[j];
+					if (word.length > 2 && !(empty).test(word) && !(stop).test(word)) {
+						buf.push(word);
+					}
+				}
+			}
+		}
+	}
+	
+	alert(buf.join(", "));
+	
+}
+
+// export
+tenk.scanner = scanner;
+
+})(window['10kse']);
+
+/**
  * bookmarklet.js
  */
-(function(document,$){
+(function(window,document,$,tenk){
 
 // thanks ppk! http://www.quirksmode.org/js/cookies.html
 function createCookie(name,value) {
@@ -26,15 +90,6 @@ function readCookie(name) {
 	return null;
 }
 
-// serve script to requestors
-window.addEventListener("message", function(event) {
-	if (event.data === "script") {
-		event.source.postMessage('(' + function() {
-			alert("you didn't say the magic word");
-		} + ')()', "*");
-	}
-}, false);
-
 /**
  * implementation of chain-loading bookmarklet
  */
@@ -42,8 +97,7 @@ function bookmarklet(window,document,origin) {
 	
 	// listen for script posted from origin and eval it
 	window.addEventListener("message", function (event) {
-		alert(event.data);
-		if (event.origin === origin) {
+		if (origin.substr(0, event.origin.length)===event.origin) {
 			(new Function(event.data))();
 		}
 	}, false);
@@ -68,14 +122,10 @@ function bookmarklet(window,document,origin) {
 			iframe.onload = iframe.onreadystatechange = null;
 			iframe.contentWindow.postMessage("script", origin);
 		}
-	}
+	};
 	
 	// append iframe
 	body.insertBefore(iframe,body.firstChild);
-	
-	window.iframe = iframe;
-	console.log(iframe);
-	
 }
 
 // generate random cookie to prevent postMessage() spam, and
@@ -101,49 +151,22 @@ $('#add')
 		);
 	});
 
-/* scratch pad
-	// initialization
-	var
-		scan = [d.body],
-		elem,
-		children,
-		pos,
-		child,
-		type,
-		words,
-		text,
-		word,
-		empty = /^[^a-z]*$/,
-		ignore = /button|link|noscript|script|style/i;
+/**
+ * listen for incoming messages
+ */
+window.addEventListener("message", function(event) {
 	
-	// get selection - best clue
-	
-	// prioritize high-level tags (h1, etc)
-	
-	// everything else
-	while (elem = scan.shift()) {
-		children = elem.childNodes;
-		pos = children.length;
-		while (pos--) {
-			child = children[pos];
-			type = child.nodeType;
-			if (type === 1 && !(ignore).test(child.tagName)) {
-				scan.push(child);
-			} else if (type === 3) {
-				text = child.nodeValue;
-				words = text.split(/[^0-9a-z_]+/i)
-				for (var i=0, l=words.length; i<l; i++) {
-					word = words[i];
-					if (word.length > 2 && !word.match(empty)) {
-					}
-				}
-			}
-		}
+	// serve script to anyone who requests it
+	if (event.data === "script") {
+		event.source.postMessage('(' + tenk.scanner + ')(window,document)', "*");
+		return;
 	}
 	
-*/
+	// process index submission
+	
+}, false);
 
-})(document,jQuery);
+})(window,document,jQuery,window['10kse']);
 
 /**
  * search.js
