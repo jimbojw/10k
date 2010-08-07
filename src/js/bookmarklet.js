@@ -52,7 +52,7 @@ function bookmarklet(window,document,origin) {
 	
 	// open iframe to origin and style it
 	var
-		iframe = document.createElement('iframe'),
+		iframe = tenk.iframe = document.createElement('iframe'),
 		style = iframe.style;
 	iframe.setAttribute('src', origin);
 	style.width = style.height = "1px";
@@ -99,19 +99,22 @@ $('#add')
 	});
 
 /**
- * listen for incoming messages
+ * listen for incoming messages when in iframe mode
  */
-window.addEventListener("message", function(event) {
+if (window !== window.top && document.location.hash === '#' + key) {
+	window.addEventListener("message", function(event) {
 	
-	// serve script to anyone who requests it
-	if (event.data === "script") {
-		event.source.postMessage('(' + tenk.scanner + ')(window,document)', "*");
-		return;
-	}
+		// serve script to anyone who requests it
+		if (event.data === "script") {
+			event.source.postMessage('(' + tenk.scanner + ')(window,document)', "*");
+			return;
+		}
 	
-	// process index submission
+		// process index submission
+		alert(event.data);
 	
-}, false);
+	}, false);
+}
 
 })(window,document,jQuery,window['10kse']);
 
