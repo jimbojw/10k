@@ -123,8 +123,7 @@ tenk.scanner = scanner;
 /**
  * index interesting page content
  */
-function indexer(content) {
-	
+function indexer(data) {
 	
 	// index user's selected content (if any)
 	
@@ -214,7 +213,7 @@ tenk.indexer = indexer;
 })(window['10kse']);
 
 /**
- * bookmarklet.js
+ * bookmarklet.js - linchpin holding scanner and indexer behavior together.
  */
 (function(window,document,$,tenk){
 
@@ -246,7 +245,9 @@ function readCookie(name) {
  */
 function bookmarklet(window,document,origin) {
 	
-	// setup namespace
+	// setup the 10kse namespace
+	// NOTE: This does not duplicate the code in intro.js since 
+	//       the bookmarklet will be running in a different page.
 	var tenk = window['10kse'];
 	if (!tenk) {
 		tenk = window['10kse'] = {};
@@ -318,16 +319,16 @@ $('#add')
  */
 if (window !== window.top && document.location.hash === '#' + key) {
 	window.addEventListener("message", function(event) {
-	
+		
 		// serve script to anyone who requests it
 		if (event.data === "script") {
 			event.source.postMessage('(' + tenk.scanner + ')(window,document)', "*");
 			return;
 		}
-	
+		
 		// process index submission
-		alert(event.data);
-	
+		tenk.indexer(JSON.parse(event.data));
+		
 	}, false);
 }
 
