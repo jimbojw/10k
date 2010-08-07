@@ -8,6 +8,18 @@
  */
 function scanner(window,document) {
 	
+	// thanks ppk! http://www.quirksmode.org/dom/getstyles.html
+	var view = document.defaultView;
+	function getStyle(el,styleProp) {
+		var style;
+		if (el.currentStyle) {
+			style = el.currentStyle[styleProp];
+		} else if (window.getComputedStyle) {
+			style = view.getComputedStyle(el,null).getPropertyValue(styleProp);
+		}
+		return style;
+	}
+	
 	// initialization
 	var
 		scan = [document.body],
@@ -34,7 +46,12 @@ function scanner(window,document) {
 		for (var i=0, l=children.length; i<l; i++) {
 			child = children[i];
 			type = child.nodeType;
-			if (type === 1 && !(ignore).test(child.tagName)) {
+			if (
+				type === 1 && 
+				!(ignore).test(child.tagName) &&
+				getStyle(child, 'display') !== 'none' &&
+				getStyle(child, 'visibility') !== 'hidden'
+			) {
 				scan.push(child);
 			} else if (type === 3) {
 				text = child.nodeValue;
