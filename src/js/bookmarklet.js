@@ -1,7 +1,7 @@
 /**
  * bookmarklet.js
  */
-(function(document,$){
+(function(window,document,$,tenk){
 
 // thanks ppk! http://www.quirksmode.org/js/cookies.html
 function createCookie(name,value) {
@@ -26,15 +26,6 @@ function readCookie(name) {
 	return null;
 }
 
-// serve script to requestors
-window.addEventListener("message", function(event) {
-	if (event.data === "script") {
-		event.source.postMessage('(' + function() {
-			alert("you didn't say the magic word");
-		} + ')()', "*");
-	}
-}, false);
-
 /**
  * implementation of chain-loading bookmarklet
  */
@@ -42,8 +33,7 @@ function bookmarklet(window,document,origin) {
 	
 	// listen for script posted from origin and eval it
 	window.addEventListener("message", function (event) {
-		alert(event.data);
-		if (event.origin === origin) {
+		if (origin.substr(0, event.origin.length)===event.origin) {
 			(new Function(event.data))();
 		}
 	}, false);
@@ -72,10 +62,6 @@ function bookmarklet(window,document,origin) {
 	
 	// append iframe
 	body.insertBefore(iframe,body.firstChild);
-	
-	window.iframe = iframe;
-	console.log(iframe);
-	
 }
 
 // generate random cookie to prevent postMessage() spam, and
@@ -101,47 +87,20 @@ $('#add')
 		);
 	});
 
-/* scratch pad
-	// initialization
-	var
-		scan = [d.body],
-		elem,
-		children,
-		pos,
-		child,
-		type,
-		words,
-		text,
-		word,
-		empty = /^[^a-z]*$/,
-		ignore = /button|link|noscript|script|style/i;
+/**
+ * listen for incoming messages
+ */
+window.addEventListener("message", function(event) {
 	
-	// get selection - best clue
-	
-	// prioritize high-level tags (h1, etc)
-	
-	// everything else
-	while (elem = scan.shift()) {
-		children = elem.childNodes;
-		pos = children.length;
-		while (pos--) {
-			child = children[pos];
-			type = child.nodeType;
-			if (type === 1 && !(ignore).test(child.tagName)) {
-				scan.push(child);
-			} else if (type === 3) {
-				text = child.nodeValue;
-				words = text.split(/[^0-9a-z_]+/i)
-				for (var i=0, l=words.length; i<l; i++) {
-					word = words[i];
-					if (word.length > 2 && !word.match(empty)) {
-					}
-				}
-			}
-		}
+	// serve script to anyone who requests it
+	if (event.data === "script") {
+		event.source.postMessage('(' + tenk.scanner + ')(window,document)', "*");
+		return;
 	}
 	
-*/
+	// process index submission
+	
+}, false);
 
-})(document,jQuery);
+})(window,document,jQuery,window['10kse']);
 
