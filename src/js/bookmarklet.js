@@ -49,12 +49,9 @@ if (!key) {
 }
 origin = JSON.stringify(origin.replace(/#.*|$/, '#' + key));
 
-// sanitize bookmarklet code
-var code = (bookmarklet + '').replace(/\s+/g, ' ');
-
 // attach bookmarklet to "add" link
 $('#add')
-	.attr('href', ('javascript:(' + code + ')(document,' + origin + ')'))
+	.attr('href', ('javascript:(' + bookmarklet + ')(document,' + origin + ')').replace(/\s+/g, ' '))
 	.click(function(e){
 		e.preventDefault();
 		alert(
