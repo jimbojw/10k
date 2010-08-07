@@ -26,15 +26,55 @@ function readCookie(name) {
 	return null;
 }
 
+// serve script to requestors
+window.addEventListener("message", function(event) {
+	if (event.data === "script") {
+		event.source.postMessage('(' + function() {
+			alert("you didn't say the magic word");
+		} + ')()', "*");
+	}
+}, false);
+
 /**
- * implementation of bookmarklet
+ * implementation of chain-loading bookmarklet
  */
-function bookmarklet(document,origin) {
+function bookmarklet(window,document,origin) {
 	
-	// open iframe to origin
+	// listen for script posted from origin and eval it
+	window.addEventListener("message", function (event) {
+		alert(event.data);
+		if (event.origin === origin) {
+			(new Function(event.data))();
+		}
+	}, false);
 	
-	// use postMessage() to ask for script
+	// open iframe to origin and style it
+	var
+		iframe = document.createElement('iframe'),
+		style = iframe.style;
+	iframe.setAttribute('src', origin);
+	style.width = style.height = "500px";
+	style.top = style.left = "100px";
+	style.position = "absolute";
 	
+	// prepare listeners for iframe state changes, and
+	// when iframe is ready, use postMessage() to ask for script
+	var
+		done = false,
+		body = document.body;
+	iframe.onload = iframe.onreadystatechange = function() {
+		if (!done && (!this.readyState || this.readyState === "loaded" || this.readyState === "complete")) {
+			done = true;
+			iframe.onload = iframe.onreadystatechange = null;
+			iframe.contentWindow.postMessage("script", origin);
+		}
+	}
+	
+	// append iframe
+	body.insertBefore(iframe,body.firstChild);
+	
+	window.iframe = iframe;
+	console.log(iframe);
 	
 }
 
@@ -51,7 +91,7 @@ origin = JSON.stringify(origin.replace(/#.*|$/, '#' + key));
 
 // attach bookmarklet to "add" link
 $('#add')
-	.attr('href', ('javascript:(' + bookmarklet + ')(document,' + origin + ')').replace(/\s+/g, ' '))
+	.attr('href', ('javascript:(' + bookmarklet + ')(window,document,' + origin + ')').replace(/\s+/g, ' '))
 	.click(function(e){
 		e.preventDefault();
 		alert(
