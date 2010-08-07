@@ -49,7 +49,7 @@ function scanner(window,document) {
 		for (j=0, m=elems.length; j<m; j++) {
 			el = elems[j];
 			if (visible(el)) {
-				priority.push("<" + tags[i] + ">" + el.textContent);
+				priority.push(el.textContent);
 			}
 		}
 	}
