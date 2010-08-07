@@ -1,7 +1,30 @@
 /**
  * bookmarklet.js
  */
-(function($){
+(function(document,$){
+
+// thanks ppk! http://www.quirksmode.org/js/cookies.html
+function createCookie(name,value) {
+	var date = new Date();
+	date.setTime(date.getTime()+(10*365*24*60*60*1000));
+	document.cookie = name + "=" + value + "; expires=" + date.toGMTString() + "; path=/";
+}
+function readCookie(name) {
+	var
+		nameEQ = name + "=",
+		ca = document.cookie.split(';'),
+		c;
+	for(var i=0, l=ca.length;i < l;i++) {
+		c = ca[i];
+		while (c.charAt(0)===' ') {
+			c = c.substr(1);
+		}
+		if (c.indexOf(nameEQ) === 0) {
+			return c.substr(nameEQ.length);
+		}
+	}
+	return null;
+}
 
 /**
  * implementation of bookmarklet
@@ -10,12 +33,28 @@ function bookmarklet(document,origin) {
 	
 	// open iframe to origin
 	
-	alert(buf.join(", "));
+	// use postMessage() to ask for script
+	
+	
 }
+
+// generate random cookie to prevent postMessage() spam, and
+// create composit origin url for anchor tag
+var
+	origin = document.location.href,
+	key = readCookie('key');
+if (!key) {
+	key = Math.random();
+	createCookie('key',key);
+}
+origin = JSON.stringify(origin.replace(/#.*|$/, '#' + key));
+
+// sanitize bookmarklet code
+var code = (bookmarklet + '').replace(/\s+/g, ' ');
 
 // attach bookmarklet to "add" link
 $('#add')
-	.attr('href', ('javascript:(' + bookmarklet + ')(document,' + JSON.stringify(document.location.href) + ')').replace(/\s+/g, ' '))
+	.attr('href', ('javascript:(' + code + ')(document,' + origin + ')'))
 	.click(function(e){
 		e.preventDefault();
 		alert(
@@ -67,5 +106,5 @@ $('#add')
 	
 */
 
-})(jQuery);
+})(document,jQuery);
 
