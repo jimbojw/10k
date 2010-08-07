@@ -47,7 +47,7 @@ function scanner(window,document) {
 	for (i=0, l=tags.length; i<l; i++) {
 		elems = document.getElementsByTagName(tags[i]);
 		for (j=0, m=elems.length; j<m; j++) {
-			var el = elems[j];
+			el = elems[j];
 			if (visible(el)) {
 				priority.push("<" + tags[i] + ">" + el.textContent);
 			}
