@@ -31,10 +31,22 @@ function readCookie(name) {
  */
 function bookmarklet(window,document,origin) {
 	
+	// setup namespace
+	var tenk = window['10kse'];
+	if (!tenk) {
+		tenk = window['10kse'] = {};
+	}
+	
+	// if script was previously retrieved, simple rexecute it
+	if (tenk.scanner) {
+		return tenk.scanner();
+	}
+	
 	// listen for script posted from origin and eval it
 	window.addEventListener("message", function (event) {
 		if (origin.substr(0, event.origin.length)===event.origin) {
-			(new Function(event.data))();
+			tenk.scanner = new Function(event.data);
+			tenk.scanner();
 		}
 	}, false);
 	
@@ -49,9 +61,7 @@ function bookmarklet(window,document,origin) {
 	
 	// prepare listeners for iframe state changes, and
 	// when iframe is ready, use postMessage() to ask for script
-	var
-		done = false,
-		body = document.body;
+	var done = false;
 	iframe.onload = iframe.onreadystatechange = function() {
 		if (!done && (!this.readyState || this.readyState === "loaded" || this.readyState === "complete")) {
 			done = true;
@@ -61,7 +71,7 @@ function bookmarklet(window,document,origin) {
 	};
 	
 	// append iframe
-	body.insertBefore(iframe,body.firstChild);
+	document.body.appendChild(iframe);
 }
 
 // generate random cookie to prevent postMessage() spam, and
