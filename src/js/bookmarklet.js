@@ -55,8 +55,9 @@ function bookmarklet(window,document,origin) {
 		iframe = document.createElement('iframe'),
 		style = iframe.style;
 	iframe.setAttribute('src', origin);
-	style.width = style.height = "500px";
-	style.top = style.left = "100px";
+	style.width = style.height = "1px";
+	style.top = style.left = "-2px";
+	style.border = "none";
 	style.position = "absolute";
 	
 	// prepare listeners for iframe state changes, and
