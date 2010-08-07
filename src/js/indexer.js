@@ -6,8 +6,7 @@
 /**
  * index interesting page content
  */
-function indexer(content) {
-	
+function indexer(data) {
 	
 	// index user's selected content (if any)
 	
