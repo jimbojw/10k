@@ -1,5 +1,5 @@
 /**
- * scanner.js
+ * scanner.js - responsible for extracting potentially interesting content from the page.
  */
 (function(tenk){
 
@@ -20,30 +20,65 @@ function scanner(window,document) {
 		return style;
 	}
 	
-	// initialization
+	/**
+	 * determine whether a given element is visible
+	 */
+	function visible(elem) {
+		return getStyle(elem, 'display') !== 'none' && getStyle(elem, 'visiblity') !== 'hidden';
+	}
+	
+	// iterator vars
 	var
-		scan = [document.body],
+		i,
+		j,
+		l,
+		m,
+		n;
+	
+	// get selection - best clue as to the important content on the page
+	var selection = document.getSelection();
+	
+	// prioritize headings over other content
+	var
+		tags = 'h1,h2,h3,h4,h5,h6,pre,code'.split(','),
+		priority = [],
+		elems,
+		el;
+	for (i=0, l=tags.length; i<l; i++) {
+		elems = document.getElementsByTagName(tags[i]);
+		for (j=0, m=elems.length; j<m; j++) {
+			var el = elems[j];
+			if (visible(el)) {
+				priority.push("<" + tags[i] + ">" + el.textContent);
+			}
+		}
+	}
+	
+	// initialize vars for content scan
+	var
+		
+		// full text content
+		content = [],
+		
+		// queue of elements left to scan, current element, and its children nodes
+		queue = [document.body],
 		elem,
 		children,
+		
+		// current child being evaluated and its nodeType
 		child,
 		type,
-		words,
-		text,
-		word,
-		empty = /^[^a-z]*$/,
+		
+		// test for interesting strings
+		interesting = /[a-z][a-z][a-z]/i,
+		
+		// tags to ignore
 		ignore = /button|link|noscript|script|style/i;
 	
-	var buf = [];
-	
-	// get selection - best clue
-	
-	// prioritize high-level tags (h1, etc)
-	
-	// everything else
-	var stop = /able|about|across|after|all|almost|also|among|and|any|are|because|been|but|can|cannot|could|dear|did|does|either|else|ever|every|for|from|get|got|had|has|have|her|hers|him|his|how|however|into|its|just|least|let|like|likely|may|might|most|must|neither|nor|not|off|often|only|other|our|own|rather|said|say|says|she|should|since|some|than|that|the|their|them|then|there|these|they|this|tis|too|twas|wants|was|were|what|when|where|which|while|who|whom|why|will|with|would|yet|you|your/i;
-	while (elem = scan.shift()) {
+	// scan document for content
+	while (elem = queue.shift()) {
 		children = elem.childNodes;
-		for (var i=0, l=children.length; i<l; i++) {
+		for (i=0, l=children.length; i<l; i++) {
 			child = children[i];
 			type = child.nodeType;
 			if (
@@ -52,21 +87,22 @@ function scanner(window,document) {
 				getStyle(child, 'display') !== 'none' &&
 				getStyle(child, 'visibility') !== 'hidden'
 			) {
-				scan.push(child);
+				queue.push(child);
 			} else if (type === 3) {
 				text = child.nodeValue;
-				words = text.split(/[^0-9a-z_]+/i);
-				for (var j=0, m=words.length; j<m; j++) {
-					word = words[j];
-					if (word.length > 2 && !(empty).test(word) && !(stop).test(word)) {
-						buf.push(word);
-					}
+				if ((interesting).test(text)) {
+					content.push(text);
 				}
 			}
 		}
 	}
 	
-	alert(buf.join(", "));
+	// send extracted data off for indexing
+	window['10kse'].iframe.contentWindow.postMessage(JSON.stringify({
+		selection: selection,
+		priority: priority,
+		content: content
+	}), "*");
 	
 }
 
