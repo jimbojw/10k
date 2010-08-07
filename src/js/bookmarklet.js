@@ -6,7 +6,7 @@
 /**
  * implementation of bookmarklet
  */
-function bookmarklet(w,d) {
+function bookmarklet(document,origin) {
 	
 	// initialization
 	var
@@ -18,7 +18,6 @@ function bookmarklet(w,d) {
 		type,
 		words,
 		text,
-		buf = [],
 		word,
 		empty = /^[^a-z]*$/,
 		ignore = /button|link|noscript|script|style/i;
@@ -42,19 +41,20 @@ function bookmarklet(w,d) {
 				for (var i=0, l=words.length; i<l; i++) {
 					word = words[i];
 					if (word.length > 2 && !word.match(empty)) {
-						buf.push(word);
 					}
 				}
 			}
 		}
 	}
 	
+	// open iframe to origin
+	
 	alert(buf.join(", "));
 }
 
 // attach bookmarklet to "add" link
 $('#add')
-	.attr('href', ('javascript:(' + bookmarklet + ')(window,document)').replace(/\n/g, ' '))
+	.attr('href', ('javascript:(' + bookmarklet + ')(document,' + JSON.stringify(document.location.href) + ')').replace(/\s+/g, ' '))
 	.click(function(e){
 		e.preventDefault();
 		alert(
