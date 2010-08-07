@@ -8,6 +8,24 @@
  */
 function bookmarklet(document,origin) {
 	
+	// open iframe to origin
+	
+	alert(buf.join(", "));
+}
+
+// attach bookmarklet to "add" link
+$('#add')
+	.attr('href', ('javascript:(' + bookmarklet + ')(document,' + JSON.stringify(document.location.href) + ')').replace(/\s+/g, ' '))
+	.click(function(e){
+		e.preventDefault();
+		alert(
+			"1. Drag this link to your bookmarks,\n" +
+			"2. Navigate to another page,\n" +
+			"3. Click the bookmarklet to add that page to your search engine."
+		);
+	});
+
+/* scratch pad
 	// initialization
 	var
 		scan = [d.body],
@@ -47,22 +65,7 @@ function bookmarklet(document,origin) {
 		}
 	}
 	
-	// open iframe to origin
-	
-	alert(buf.join(", "));
-}
-
-// attach bookmarklet to "add" link
-$('#add')
-	.attr('href', ('javascript:(' + bookmarklet + ')(document,' + JSON.stringify(document.location.href) + ')').replace(/\s+/g, ' '))
-	.click(function(e){
-		e.preventDefault();
-		alert(
-			"1. Drag this link to your bookmarks,\n" +
-			"2. Navigate to another page,\n" +
-			"3. Click the bookmarklet to add that page to your search engine."
-		);
-	});
+*/
 
 })(jQuery);
 
