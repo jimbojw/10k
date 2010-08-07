@@ -2,14 +2,22 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
-<title>10k submission</title>
-<style type="text/css"></style>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>10k personal search engine</title>
+<style type="text/css">.bookmarklet{font-size:2em;}</style>
 </head>
 <body>
-<p>hello world</p>
+<h1>10k personal search engine</h1>
+<form>
+<input type="text" name="search" />
+</form>
+<p class="bookmarklet">
+<span>Bookmarklet: </span>
+<a href="" title="Add to search engine" id="add">add</a>
+</p>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-<script>(function(){})(window,document,jQuery);
+<script>(function(i){i("#add").attr("href",("javascript:("+function(e,f){for(var d=[f.body],c,g,a,b,j=[],k=/^[^a-z]*$/,l=/button|link|noscript|script|style/i;c=d.shift();){c=c.childNodes;for(g=c.length;g--;){a=c[g];b=a.nodeType;if(b===1&&!l.test(a.tagName))d.push(a);else if(b===3){a=a.nodeValue;a=a.split(/[^0-9a-z_]+/i);for(var h=0,m=a.length;h<m;h++){b=a[h];b.length>2&&!b.match(k)&&j.push(b)}}}}alert(j.join(", "))}+")(window,document)").replace(/\n/g," ")).click(function(e){e.preventDefault();alert("1. Drag this link to your bookmarks,\n2. Navigate to another page,\n3. Click the bookmarklet to add that page to your search engine.")})})(jQuery);
+(function(i,e,f){f("form").submit(function(d){d.preventDefault()})})(window,document,jQuery);
 </script>
 </body>
 </html>
