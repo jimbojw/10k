@@ -12,7 +12,11 @@ var ok = {
 	"Use '===' to compare with 'null'.": true,
 	"Use '!==' to compare with 'null'.": true,
 	"Expected an assignment or function call and instead saw an expression.": true,
-	"Expected a 'break' statement before 'case'.": true
+	"Expected a 'break' statement before 'case'.": true,
+	
+	// normally I'd fix these, but for the 10k project, I'm making exceptions :/
+	"Script URL.": true,
+	"Expected a conditional expression and instead saw an assignment.": true
 };
 
 var e = JSLINT.errors, found = 0, w;
