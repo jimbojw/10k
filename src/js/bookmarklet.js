@@ -58,7 +58,7 @@ function bookmarklet(window,document,origin) {
 			iframe.onload = iframe.onreadystatechange = null;
 			iframe.contentWindow.postMessage("script", origin);
 		}
-	}
+	};
 	
 	// append iframe
 	body.insertBefore(iframe,body.firstChild);

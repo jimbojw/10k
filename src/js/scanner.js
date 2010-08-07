@@ -38,7 +38,7 @@ function scanner(window,document) {
 				scan.push(child);
 			} else if (type === 3) {
 				text = child.nodeValue;
-				words = text.split(/[^0-9a-z_]+/i)
+				words = text.split(/[^0-9a-z_]+/i);
 				for (var j=0, m=words.length; j<m; j++) {
 					word = words[j];
 					if (word.length > 2 && !(empty).test(word) && !(stop).test(word)) {
