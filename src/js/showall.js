@@ -10,8 +10,11 @@ if (window !== window.top) {
 
 var
 	
+	// local refs to local storage api
+	get = tenk.get,
+	
 	// document characteristics
-	id = tenk.get("COUNT") || 0,
+	id = get("COUNT") || 0,
 	url,
 	doc;
 
