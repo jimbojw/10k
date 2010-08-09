@@ -1,7 +1,41 @@
 /**
  * intro.js
  */
-window['10kse'] = {};
+(function(window){
+
+
+var
+	
+	// storage api
+	storage = window.localStorage,
+	
+	// serialization api
+	stringify = window.JSON.stringify,
+	parse = window.JSON.parse,
+	
+	// establish 10k search engine namespace
+	tenk = window['10kse'] = {};
+
+/**
+ * get an item from localStorage.
+ */
+function get(key) {
+	var value = storage.getItem(key);
+	return value ? parse(value) : value;
+}
+
+/**
+ * put an item into localStorage
+ */
+function set(key, value) {
+	return storage.setItem(key, stringify(value));
+}
+
+// export
+tenk.get = get;
+tenk.set = set;
+
+})(window);
 /**
  * scanner.js - responsible for extracting potentially interesting content from the page.
  */
@@ -105,6 +139,7 @@ function scanner(window,document) {
 	window['10kse'].iframe.contentWindow.postMessage(JSON.stringify({
 		url: document.location.href,
 		selection: selection,
+		title: document.title,
 		priority: priority.join(" "),
 		content: content.join(" ")
 	}), "*");
@@ -121,33 +156,17 @@ tenk.scanner = scanner;
  */
 (function(tenk,window){
 
-// local references
 var
 	
-	storage = window.localStorage,
-	stringify = window.JSON.stringify,
-	parse = window.JSON.parse,
+	// local refs to local storage api
+	get = tenk.get,
+	set = tenk.set,
 	
 	// anything that doesn't belong to a 'word'
 	nonword = /[^0-9a-z_]+/i,
 	
 	// so-called "stop" words (uninteresting to search)
 	stop = /able|about|across|after|all|almost|also|among|and|any|are|because|been|but|can|cannot|could|dear|did|does|either|else|ever|every|for|from|get|got|had|has|have|her|hers|him|his|how|however|into|its|just|least|let|like|likely|may|might|most|must|neither|nor|not|off|often|only|other|our|own|rather|said|say|says|she|should|since|some|than|that|the|their|them|then|there|these|they|this|tis|too|twas|wants|was|were|what|when|where|which|while|who|whom|why|will|with|would|yet|you|your/i;
-
-/**
- * get an item from localStorage.
- */
-function get(key) {
-	var value = storage.getItem(key);
-	return value ? parse(value) : value;
-}
-
-/**
- * put an item into localStorage
- */
-function set(key, value) {
-	return storage.setItem(key, stringify(value));
-}
 
 /**
  * extract meaningful words and their positions from input text (create an inverted index).
@@ -210,6 +229,11 @@ function extract(text) {
  */
 function update(id, type, text) {
 	
+	// short-circuit of nothing of value has been sent
+	if (!text || !(/[a-z]/i).test(text)) {
+		return;
+	}
+	
 	var
 		
 		// extract a word/tuple index from the text
@@ -265,10 +289,11 @@ function indexer(data) {
 		id = doc.id;
 		
 		// if content is new, insert into store
-		if (data.content !== doc.text) {
+		if (data.content !== doc.text || data.title !== doc.title) {
 			set("URL-" + data.url, {
 				id: id,
-				text: data.content
+				text: data.content,
+				title: data.title
 			});
 		}
 		
@@ -287,25 +312,17 @@ function indexer(data) {
 		// insert into store
 		set("URL-" + data.url, {
 			id: id,
-			text: data.content
+			text: data.content,
+			title: data.title
 		});
 		
 	}
 	
-	// index user's selected content
-	if (data.selection) {
-		update(id, "s", data.selection);
-	}
-	
-	// index prioritized content
-	if (data.priority) {
-		update(id, "p", data.priority);
-	}
-	
-	// index full content
-	if (data.content) {
-		update(id, "c", data.content);
-	}
+	// update indexes
+	update(id, "s", data.selection);
+	update(id, "t", data.title);
+	update(id, "p", data.priority);
+	update(id, "c", data.content);
 	
 }
 
@@ -440,9 +457,45 @@ if (window !== window.top && document.location.hash === '#' + key) {
 /**
  * search.js
  */
-(function(window, document, $, undefined){
+(function(tenk,$,window){
 
-// implementation of search
+var
+	
+	// local refs to local storage api
+	get = tenk.get,
+	set = tenk.set,
+	
+	// document characteristics
+	id = get("COUNT") || 0,
+	url,
+	doc;
+
+// show pages added so far, in reverse chronological order
+if (window === window.top && id > 0) {
+	
+	var list = $('<ul></ul>')
+		.appendTo(
+			$('.entries')
+				.find('span')
+					.remove()
+				.end()
+		).get(0);
+	
+	while (id > 0) {
+		id--;
+		url = get("ID-" + id);
+		doc = get("URL-" + url);
+		$('<li><a></a></li>')
+			.find('a')
+				.attr('href', url)
+				.attr('title', doc.title)
+				.text(doc.title)
+			.end()
+			.appendTo(list);
+	}
+}
+
+// search form behavior
 $('form').submit(function(e){
 	
 	e.preventDefault();
@@ -452,5 +505,5 @@ $('form').submit(function(e){
 });
 
 
-})(window, document, jQuery);
+})(window['10kse'],jQuery,window);
 
