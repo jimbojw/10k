@@ -3,7 +3,7 @@ My submission for the 10k apart contest.
 ## local storage
 
 Mappings:
-* url to full text
+* url to id/title/text
 * id to url
 * word to tuples containing id/type/position pairs
 

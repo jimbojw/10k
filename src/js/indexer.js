@@ -152,10 +152,11 @@ function indexer(data) {
 		id = doc.id;
 		
 		// if content is new, insert into store
-		if (data.content !== doc.text) {
+		if (data.content !== doc.text || data.title !== doc.title) {
 			set("URL-" + data.url, {
 				id: id,
-				text: data.content
+				text: data.content,
+				title: data.title
 			});
 		}
 		
@@ -174,7 +175,8 @@ function indexer(data) {
 		// insert into store
 		set("URL-" + data.url, {
 			id: id,
-			text: data.content
+			text: data.content,
+			title: data.title
 		});
 		
 	}
