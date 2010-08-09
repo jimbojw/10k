@@ -3,20 +3,25 @@
 <head>
 <meta charset="utf-8" />
 <title>10k personal search engine</title>
-<style type="text/css">.bookmarklet{font-size:2em;}</style>
+<style type="text/css"></style>
 </head>
 <body>
 <h1>10k personal search engine</h1>
-<form>
-<input type="text" name="search" />
-</form>
-<p class="bookmarklet">
-<span>Bookmarklet: </span>
-<a href="" title="Add to search engine" id="add">add</a>
-</p>
+<div class="search">
+<h2><span>Search</span></h2>
+<form><input type="text" name="search" /></form>
+</div>
+<div class="results">
+<h2><span>Results</span></h2>
+<div></div>
+</div>
+<div class="bookmarklet">
+<h2><span>Bookmarklet</span></h2>
+<p><a href="" title="Add to search engine" id="add"><span>add</span></a></p>
+</div>
 <div class="entries">
-<h2>Pages bookmarked:</h2>
-<span>none yet :/</span>
+<h2><span>All pages</span></h2>
+<div><p>none yet :/</p></div>
 </div>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 <script>(function(e){var j=e.localStorage,f=e.JSON.stringify,k=e.JSON.parse;e=e["10kse"]={};e.get=function(h){return(h=j.getItem(h))?k(h):h};e.set=function(h,i){return j.setItem(h,f(i))}})(window);
@@ -27,7 +32,7 @@ e.extract=j;e.indexer=function(a){var c,b=k("URL-"+a.url);if(b){c=b.id;if(a.cont
 (function(e,j,f,k){function h(a,c){var b=new Date;b.setTime(b.getTime()+31536E7);j.cookie=a+"="+c+"; expires="+b.toGMTString()+"; path=/"}var i=j.location.href,l=function(a){a=a+"=";for(var c=j.cookie.split(";"),b,d=0,g=c.length;d<g;d++){for(b=c[d];b.charAt(0)===" ";)b=b.substr(1);if(b.indexOf(a)===0)return b.substr(a.length)}return null}("key");if(!l){l=Math.random();h("key",l)}i=JSON.stringify(i.replace(/#.*|$/,"#"+l));f("#add").attr("href",("javascript:("+function(a,c,b){var d=a["10kse"];d||(d=
 a["10kse"]={});if(d.scanner)return d.scanner();a.addEventListener("message",function(n){if(b.substr(0,n.origin.length)===n.origin){d.scanner=new Function(n.data);d.scanner()}},false);var g=d.iframe=c.createElement("iframe");a=g.style;g.setAttribute("src",b);a.width=a.height="1px";a.top=a.left="-2px";a.border="none";a.position="absolute";var m=false;g.onload=g.onreadystatechange=function(){if(!m&&(!this.readyState||this.readyState==="loaded"||this.readyState==="complete")){m=true;g.onload=g.onreadystatechange=
 null;g.contentWindow.postMessage("script",b)}};c.body.appendChild(g)}+")(window,document,"+i+")").replace(/\s+/g," ")).click(function(a){a.preventDefault();alert("1. Drag this link to your bookmarks,\n2. Navigate to another page,\n3. Click the bookmarklet to add that page to your search engine.")});e!==e.top&&j.location.hash==="#"+l&&e.addEventListener("message",function(a){a.data==="script"?a.source.postMessage("("+k.scanner+")(window,document)","*"):k.indexer(JSON.parse(a.data))},false)})(window,
-document,jQuery,window["10kse"]);(function(e,j,f){e=e.get;var k=e("COUNT")||0,h;if(f===f.top&&k>0)for(var i=j("<ul></ul>").appendTo(j(".entries").find("span").remove().end()).get(0);k>0;){k--;f=e("ID-"+k);h=e("URL-"+f);j("<li><a></a></li>").find("a").attr("href",f).attr("title",h.title).text(h.title).end().appendTo(i)}j("form").submit(function(l){l.preventDefault()})})(window["10kse"],jQuery,window);
+document,jQuery,window["10kse"]);(function(e,j,f){e=e.get;var k=e("COUNT")||0,h;if(f===f.top&&k>0)for(var i=j("<ul></ul>").appendTo(j(".entries").find("div").empty());k>0;){k--;f=e("ID-"+k);h=e("URL-"+f);j("<li><a></a></li>").find("a").attr("href",f).attr("title",h.title).text(h.title).end().appendTo(i)}j("form").submit(function(l){l.preventDefault()})})(window["10kse"],jQuery,window);
 </script>
 </body>
 </html>
