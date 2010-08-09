@@ -11,6 +11,7 @@ JS_FILES = \
 	${SRC_DIR}/js/scanner.js\
 	${SRC_DIR}/js/indexer.js\
 	${SRC_DIR}/js/bookmarklet.js\
+	${SRC_DIR}/js/showall.js\
 	${SRC_DIR}/js/search.js
 
 JS_OUT = ${DIST_DIR}/js/script.js
