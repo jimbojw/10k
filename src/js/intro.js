@@ -6,7 +6,12 @@
 
 var
 	
+	// storage api
 	storage = window.localStorage,
+	
+	// serialization api
+	stringify = window.JSON.stringify,
+	parse = window.JSON.parse,
 	
 	// establish 10k search engine namespace
 	tenk = window['10kse'] = {};

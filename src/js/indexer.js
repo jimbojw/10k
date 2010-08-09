@@ -5,10 +5,6 @@
 
 var
 	
-	// local refs to serialization api
-	stringify = window.JSON.stringify,
-	parse = window.JSON.parse,
-	
 	// local refs to local storage api
 	get = tenk.get,
 	set = tenk.set,
