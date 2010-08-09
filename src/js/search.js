@@ -1,7 +1,7 @@
 /**
  * search.js
  */
-(function(tenk,$){
+(function(tenk,$,window){
 
 var
 	
@@ -15,7 +15,7 @@ var
 	doc;
 
 // show pages added so far, in reverse chronological order
-if (id > 0) {
+if (window === window.top && id > 0) {
 	
 	var list = $('<ul></ul>')
 		.appendTo(
@@ -49,5 +49,5 @@ $('form').submit(function(e){
 });
 
 
-})(window['10kse'],jQuery);
+})(window['10kse'],jQuery,window);
 
