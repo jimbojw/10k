@@ -10,7 +10,7 @@ if (window !== window.top) {
 
 var
 	
-	// local refs to local storage api
+	// storage api
 	get = tenk.get,
 	
 	// document characteristics
