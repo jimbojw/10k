@@ -17,13 +17,12 @@ var
 // show pages added so far, in reverse chronological order
 if (window === window.top && id > 0) {
 	
-	var list = $('<ul></ul>')
+	var $list = $('<ul></ul>')
 		.appendTo(
 			$('.entries')
-				.find('span')
-					.remove()
-				.end()
-		).get(0);
+				.find('div')
+					.empty()
+		);
 	
 	while (id > 0) {
 		id--;
@@ -35,7 +34,7 @@ if (window === window.top && id > 0) {
 				.attr('title', doc.title)
 				.text(doc.title)
 			.end()
-			.appendTo(list);
+			.appendTo($list);
 	}
 }
 
