@@ -92,6 +92,11 @@ function extract(text) {
  */
 function update(id, type, text) {
 	
+	// short-circuit of nothing of value has been sent
+	if (!text || !(/[a-z]/i).test(text)) {
+		return;
+	}
+	
 	var
 		
 		// extract a word/tuple index from the text
@@ -174,20 +179,11 @@ function indexer(data) {
 		
 	}
 	
-	// index user's selected content
-	if (data.selection) {
-		update(id, "s", data.selection);
-	}
-	
-	// index prioritized content
-	if (data.priority) {
-		update(id, "p", data.priority);
-	}
-	
-	// index full content
-	if (data.content) {
-		update(id, "c", data.content);
-	}
+	// update indexes
+	update(id, "s", data.selection);
+	update(id, "t", data.title);
+	update(id, "p", data.priority);
+	update(id, "c", data.content);
 	
 }
 

@@ -101,6 +101,7 @@ function scanner(window,document) {
 	window['10kse'].iframe.contentWindow.postMessage(JSON.stringify({
 		url: document.location.href,
 		selection: selection,
+		title: document.title,
 		priority: priority.join(" "),
 		content: content.join(" ")
 	}), "*");
