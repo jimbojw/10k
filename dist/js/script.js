@@ -455,15 +455,19 @@ if (window !== window.top && document.location.hash === '#' + key) {
 })(window,document,jQuery,window['10kse']);
 
 /**
- * search.js
+ * showall.js - show all pages entered so far.
  */
 (function(tenk,$,window){
+
+// short-circuit if this page is in an iframe
+if (window !== window.top) {
+	return;
+}
 
 var
 	
 	// local refs to local storage api
 	get = tenk.get,
-	set = tenk.set,
 	
 	// document characteristics
 	id = get("COUNT") || 0,
@@ -471,7 +475,7 @@ var
 	doc;
 
 // show pages added so far, in reverse chronological order
-if (window === window.top && id > 0) {
+if (id > 0) {
 	
 	var $list = $('<ul></ul>')
 		.appendTo(
@@ -494,6 +498,13 @@ if (window === window.top && id > 0) {
 	}
 }
 
+})(window['10kse'],jQuery,window);
+
+/**
+ * search.js
+ */
+(function(tenk,$){
+
 // search form behavior
 $('form').submit(function(e){
 	
@@ -504,5 +515,5 @@ $('form').submit(function(e){
 });
 
 
-})(window['10kse'],jQuery,window);
+})(window['10kse'],jQuery);
 
