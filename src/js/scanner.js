@@ -36,7 +36,7 @@ function scanner(window,document) {
 		n;
 	
 	// get selection - best clue as to the important content on the page
-	var selection = document.getSelection();
+	var selection = document.getSelection() || '';
 	
 	// prioritize headings over other content
 	var
@@ -87,11 +87,11 @@ function scanner(window,document) {
 				getStyle(child, 'display') !== 'none' &&
 				getStyle(child, 'visibility') !== 'hidden'
 			) {
-				queue.push(child);
+				queue[queue.length] = child;
 			} else if (type === 3) {
 				text = child.nodeValue;
 				if ((interesting).test(text)) {
-					content.push(text);
+					content[content.length] = text;
 				}
 			}
 		}
@@ -99,9 +99,10 @@ function scanner(window,document) {
 	
 	// send extracted data off for indexing
 	window['10kse'].iframe.contentWindow.postMessage(JSON.stringify({
+		url: document.location.href,
 		selection: selection,
-		priority: priority,
-		content: content
+		priority: priority.join(" "),
+		content: content.join(" ")
 	}), "*");
 	
 }
