@@ -3,33 +3,21 @@
  */
 (function(tenk,window){
 
-// local references
 var
 	
-	storage = window.localStorage,
+	// local refs to serialization api
 	stringify = window.JSON.stringify,
 	parse = window.JSON.parse,
+	
+	// local refs to local storage api
+	get = tenk.get,
+	set = tenk.set,
 	
 	// anything that doesn't belong to a 'word'
 	nonword = /[^0-9a-z_]+/i,
 	
 	// so-called "stop" words (uninteresting to search)
 	stop = /able|about|across|after|all|almost|also|among|and|any|are|because|been|but|can|cannot|could|dear|did|does|either|else|ever|every|for|from|get|got|had|has|have|her|hers|him|his|how|however|into|its|just|least|let|like|likely|may|might|most|must|neither|nor|not|off|often|only|other|our|own|rather|said|say|says|she|should|since|some|than|that|the|their|them|then|there|these|they|this|tis|too|twas|wants|was|were|what|when|where|which|while|who|whom|why|will|with|would|yet|you|your/i;
-
-/**
- * get an item from localStorage.
- */
-function get(key) {
-	var value = storage.getItem(key);
-	return value ? parse(value) : value;
-}
-
-/**
- * put an item into localStorage
- */
-function set(key, value) {
-	return storage.setItem(key, stringify(value));
-}
 
 /**
  * extract meaningful words and their positions from input text (create an inverted index).
