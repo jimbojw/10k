@@ -9,7 +9,7 @@ var
 	get = tenk.get,
 	
 	// serialization api
-	stringify = JSON.stringify;
+	stringify = JSON.stringify,
 	
 	// cached jqueri results
 	$results = $('.results dl'),
@@ -28,8 +28,7 @@ $('form').submit(function(e){
 	var
 		
 		// extract terms from supplied search input string
-		text = $input.val() || '',
-		terms = text.toLowerCase().split(/[^a-z0-9_]/),
+		terms = ($input.val() || '').toLowerCase().split(/[^a-z0-9_]/),
 		
 		// iteration vars
 		i,
@@ -37,23 +36,24 @@ $('form').submit(function(e){
 		term,
 		record,
 		
-		// matching document ids
+		// a document id
 		id,
-		ids = {},
-		count;
+		
+		// count how many searched terms appear in each document
+		hitcount = {},
+		
+		// record cache
+		recordcache = {};
 	
 	// collect matching document ids
 	for (i=0, l=terms.length; i<l; i++) {
 		
 		term = terms[i].toLowerCase();
-		record = get("W-" + term);
+		record = recordcache[term] || (recordcache[term] = get("W-" + term));
 		
 		if (record) {
 			for (id in record) {
-				if (!ids[id]) {
-					count++;
-					ids[id] = true;
-				}
+				hitcount[id] += 1;
 			}
 		}
 		
@@ -74,7 +74,7 @@ $('form').submit(function(e){
 	// Display search results, highlighted appropriately
 	$results.empty();
 	var re = new RegExp('(.*?\\b)(' + terms.join('|') + ')(\\b.*)');
-	for (id in ids) {
+	for (id in hitcount) {
 		
 		var
 			url = get("ID-" + id),
