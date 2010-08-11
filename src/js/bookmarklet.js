@@ -6,7 +6,7 @@
 // thanks ppk! http://www.quirksmode.org/js/cookies.html
 function createCookie(name,value) {
 	var date = new Date();
-	date.setTime(date.getTime()+(10*365*24*60*60*1000));
+	date.setTime(date.getTime() + 3E11);
 	document.cookie = name + "=" + value + "; expires=" + date.toGMTString() + "; path=/";
 }
 function readCookie(name) {
