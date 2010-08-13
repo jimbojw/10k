@@ -44,7 +44,7 @@ tenk.set = set;
 /**
  * scans the page for index worthy content
  */
-function scanner(window,document) {
+function scanner(window,document,undefined) {
 	
 	// thanks ppk! http://www.quirksmode.org/dom/getstyles.html
 	var view = document.defaultView;
@@ -122,8 +122,7 @@ function scanner(window,document) {
 			if (
 				type === 1 && 
 				!(ignore).test(child.tagName) &&
-				getStyle(child, 'display') !== 'none' &&
-				getStyle(child, 'visibility') !== 'hidden'
+				visible(child)
 			) {
 				queue[queue.length] = child;
 			} else if (type === 3) {
@@ -337,28 +336,14 @@ tenk.indexer = indexer;
  */
 (function(window,document,$,tenk){
 
-// thanks ppk! http://www.quirksmode.org/js/cookies.html
-function createCookie(name,value) {
-	var date = new Date();
-	date.setTime(date.getTime()+(10*365*24*60*60*1000));
-	document.cookie = name + "=" + value + "; expires=" + date.toGMTString() + "; path=/";
-}
-function readCookie(name) {
-	var
-		nameEQ = name + "=",
-		ca = document.cookie.split(';'),
-		c;
-	for(var i=0, l=ca.length;i < l;i++) {
-		c = ca[i];
-		while (c.charAt(0)===' ') {
-			c = c.substr(1);
-		}
-		if (c.indexOf(nameEQ) === 0) {
-			return c.substr(nameEQ.length);
-		}
-	}
-	return null;
-}
+var
+	
+	// storage api
+	get = tenk.get,
+	set = tenk.set,
+	
+	// serialization api
+	stringify = JSON.stringify;
 
 /**
  * implementation of chain-loading bookmarklet
@@ -411,14 +396,14 @@ function bookmarklet(window,document,origin) {
 	document.body.appendChild(iframe);
 }
 
-// generate random cookie to prevent postMessage() spam, and
+// generate random token to prevent postMessage() spam, and
 // create composit origin url for anchor tag
 var
 	origin = document.location.href,
-	key = readCookie('key');
+	key = get('key');
 if (!key) {
 	key = Math.random();
-	createCookie('key',key);
+	set('key',key);
 }
 origin = JSON.stringify(origin.replace(/#.*|$/, '#' + key));
 
