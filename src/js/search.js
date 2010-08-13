@@ -14,9 +14,12 @@ var
 	// serialization api
 	stringify = JSON.stringify,
 	
-	// cached jqueri results
+	// cached jquery results
 	$results = $('.results dl'),
-	$input = $('.search input');
+	$input = $('.search input'),
+	
+	// scratch pad for html special character conversion
+	$scratch = $('<div></div>');
 
 /**
  * normalize a set of scores.
@@ -108,6 +111,112 @@ function wordcount(ids, terms, type, recordcache) {
 	}
 	
 	return scores;
+	
+}
+
+/**
+ * highlight terms in the provided text.
+ * @param {string} text The text to highlight.
+ * @param {array} terms An array of terms to highlight.
+ * @param {boolean} truncate Whether to truncate the output (defaults to true).
+ */
+function highlight(text, terms, truncate) {
+	
+	// default behavior is to truncate
+	if (truncate === undefined) {
+		truncate = true;
+	}
+	
+	// convert html special characters to entities
+	text = $scratch.text(text).html();
+	
+	var
+		
+		// memory of whether we've seen this term before
+		seen = {},
+		
+		// mapping of indexes to terms
+		index = {},
+		
+		// flat list of positions for sorting
+		flat = [],
+		
+		// number of term matches to find before terminating the loop
+		limit = 3,
+		
+		// iteration vars
+		i,
+		l;
+	
+	// find first few positions of terms
+	for (i=0, l=terms.length; i<l; i++) {
+		
+		var 
+			term = terms[i],
+			len = term.length;
+		
+		if (len > 2 && !seen[term]) {
+			
+			seen[term] = true;
+			
+			var
+				
+				// count of how many of this term have been found
+				count = 0,
+				
+				// latest position
+				pos = 0;
+			
+			while (count < limit) {
+				
+				// find the next match
+				pos = text.indexOf(term, pos);
+				
+				// abort if there are none
+				if (pos === -1) {
+					break;
+				}
+				
+				// grab the characters preceeding and succeeding the match
+				var
+					before = text.charAt(pos - 1).toLowerCase(),
+					after = text.charAt(pos + len).toLowerCase();
+				
+				// check that they're not 'word' characters
+				if (
+					(before < 'a' || before > 'z') &&
+					(after < 'a' || after > 'z')
+				) {
+					
+					count++;
+					flat[flat.length] = pos;
+					index[pos] = term;
+					
+				}
+				
+				// increment pos to skip past the last match
+				pos += len;
+				
+			}
+			
+		}
+	}
+	
+	// sort the matches
+	flat.sort();
+	
+	// build out a highlighted return string
+	pos = flat[0];
+	var buf =
+		(pos > 50 ?
+			"... " + text.substr(pos - 47, pos) :
+			text.substr(0, pos)
+		) +
+		'<b>' + index[pos] + '</b>';
+	
+	// TODO: finish building string with more matches
+	
+	return buf;
 	
 }
 
@@ -232,6 +341,7 @@ $(function(){
 // exports
 tenk.wordcount = wordcount;
 tenk.normalize = normalize;
+tenk.highlight = highlight;
 
 })(window,document,window['10kse'],jQuery);
 
