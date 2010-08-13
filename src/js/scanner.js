@@ -6,7 +6,7 @@
 /**
  * scans the page for index worthy content
  */
-function scanner(window,document) {
+function scanner(window,document,undefined) {
 	
 	// thanks ppk! http://www.quirksmode.org/dom/getstyles.html
 	var view = document.defaultView;
@@ -84,8 +84,7 @@ function scanner(window,document) {
 			if (
 				type === 1 && 
 				!(ignore).test(child.tagName) &&
-				getStyle(child, 'display') !== 'none' &&
-				getStyle(child, 'visibility') !== 'hidden'
+				visible(child)
 			) {
 				queue[queue.length] = child;
 			} else if (type === 3) {
