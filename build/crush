@@ -1,0 +1,3 @@
+cat dist/index.html | java -jar build/js.jar build/data-to-pgm.js > test/data.pgm 
+convert test/data.pgm test/data.png
+pngcrush test/data.png test/crushed.png
