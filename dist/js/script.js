@@ -14,7 +14,16 @@ var
 	parse = window.JSON.parse,
 	
 	// establish 10k search engine namespace
-	tenk = window['10kse'] = {};
+	tenk = window['10kse'] = {},
+	
+	// so-called "stop" words (uninteresting to a search application)
+	stopwords = "able|about|across|after|all|almost|also|among|and|any|are|because|been|but|can|cannot|could|dear|did|does|either|else|ever|every|for|from|get|got|had|has|have|her|hers|him|his|how|however|into|its|just|least|let|like|likely|may|might|most|must|neither|nor|not|off|often|only|other|our|own|rather|said|say|says|she|should|since|some|than|that|the|their|them|then|there|these|they|this|tis|too|twas|wants|was|were|what|when|where|which|while|who|whom|why|will|with|would|yet|you|your".split("|"),
+	stop = {};
+
+// build stop hash
+for (var i=0, l=stopwords.length; i<l; i++) {
+	stop[stopwords[i]] = true;
+}
 
 /**
  * get an item from localStorage.
@@ -31,9 +40,10 @@ function set(key, value) {
 	return storage.setItem(key, stringify(value));
 }
 
-// export
+// exports
 tenk.get = get;
 tenk.set = set;
+tenk.stop = stop;
 
 })(window);
 /**
@@ -65,13 +75,119 @@ function scanner(window,document,undefined) {
 		return getStyle(elem, 'display') !== 'none' && getStyle(elem, 'visiblity') !== 'hidden';
 	}
 	
-	// iterator vars
+	/**
+	 * utility function for getting an element's text content.
+	 */
+	function gettext(elem) {
+		return elem.innerText || elem.textContent;
+	}
+	
+	// concepts borrowed from readability, and adapted to search content scanning
+	// http://code.google.com/p/arc90labs-readability/
 	var
+		
+		// list of candidate container elements, and count
+		candidates = [],
+		count = 0,
+		
+		// short-hand for custom DOM property
+		s = '10score',
+		
+		// regular expression matching contiguous whitespace characters
+		whitespace = /\s+/g,
+		
+		// iterator vars
 		i,
-		j,
 		l,
+		j,
 		m,
 		n;
+	
+	/**
+	 * interrogate an element and assign it a score based on its content.
+	 */
+	function interrogate(elem) {
+		
+		var
+			parent = elem.parentNode,
+			grandparent = parent.parentNode,
+			text = gettext(elem).replace(whitespace, ' '),
+			len = text.length,
+			score = 1,
+			points;
+		
+		if (len > 25) {
+			
+			if (parent[s] === undefined) {
+				parent[s] = 0;
+				candidates[count++] = parent;
+			}
+			
+			if (grandparent[s] === undefined) {
+				grandparent[s] = 0;
+				candidates[count++] = parent;
+			}
+			
+			/* Add points for any commas within this paragraph */
+			score += text.split(',').length;
+			
+			/* For every 100 characters in this paragraph, add another point. Up to 3 points. */
+			points = (len * 0.01) << 0;
+			score += (points < 4 ? points : 3);
+			
+			/* Add the score to the parent. The grandparent gets half. */
+			parent[s] += score;
+			grandparent[s] += score * 0.5;
+			
+		}
+	}
+	
+	// interrogate all paragraphs
+	var ps = document.getElementsByTagName('p');
+	for (i=0, l=ps.length; i<l; i++) {
+		interrogate(ps[i]);
+	}
+	
+	// interrogate interesting divs
+	var
+		
+		// grab divs in document
+		divs = document.getElementsByTagName('div'),
+		div,
+		
+		// regular expression to identify interesting divs
+		interesting = /<(a|blockquote|dl|div|img|ol|p|pre|table|ul|br)/i;
+		
+	for (i=0, l=divs.length; i<l; i++) {
+		div = divs[i];
+		if ((interesting).test(div.innerHTML)) {
+			interrogate(div);
+		}
+	}
+	
+	// find the best element among the candidates
+	var
+		best = null,
+		elem,
+		links,
+		link,
+		linklen;
+	for (i=0; i<count; i++) {
+		elem = candidates[i];
+		links = elem.getElementsByTagName('a');
+		linklen = 0;
+		for (j=0, m=links.length; j<m; j++) {
+			link = links[j];
+			linklen += gettext(link).length;
+		}
+		elem[s] = score = elem[s] * (1 - linklen / gettext(elem).length);
+		if (!best || score > best[s]) {
+			best = elem;
+		}
+	}
+	
+	// if none could be found, fall back to the document body
+	best = best || document.body;
 	
 	// get selection - best clue as to the important content on the page
 	var selection = document.getSelection() || '';
@@ -99,8 +215,7 @@ function scanner(window,document,undefined) {
 		content = [],
 		
 		// queue of elements left to scan, current element, and its children nodes
-		queue = [document.body],
-		elem,
+		queue = [best],
 		children,
 		
 		// current child being evaluated and its nodeType
@@ -108,7 +223,7 @@ function scanner(window,document,undefined) {
 		type,
 		
 		// test for interesting strings
-		interesting = /[a-z][a-z][a-z]/i,
+		wordy = /[a-z][a-z][a-z]/i,
 		
 		// tags to ignore
 		ignore = /button|link|noscript|script|style/i;
@@ -127,7 +242,7 @@ function scanner(window,document,undefined) {
 				queue[queue.length] = child;
 			} else if (type === 3) {
 				text = child.nodeValue;
-				if ((interesting).test(text)) {
+				if ((wordy).test(text)) {
 					content[content.length] = text;
 				}
 			}
@@ -165,7 +280,7 @@ var
 	nonword = /[^0-9a-z_]+/i,
 	
 	// so-called "stop" words (uninteresting to search)
-	stop = /able|about|across|after|all|almost|also|among|and|any|are|because|been|but|can|cannot|could|dear|did|does|either|else|ever|every|for|from|get|got|had|has|have|her|hers|him|his|how|however|into|its|just|least|let|like|likely|may|might|most|must|neither|nor|not|off|often|only|other|our|own|rather|said|say|says|she|should|since|some|than|that|the|their|them|then|there|these|they|this|tis|too|twas|wants|was|were|what|when|where|which|while|who|whom|why|will|with|would|yet|you|your/i;
+	stop = tenk.stop;
 
 /**
  * extract meaningful words and their positions from input text (create an inverted index).
@@ -202,10 +317,10 @@ function extract(text) {
 		
 		pos++;
 		word = words[i];
+		lc = word.toLowerCase();
 		
-		if (word.length > 2 && !(stop).test(word)) {
+		if (word.length > 2 && !stop[lc]) {
 			
-			lc = word.toLowerCase();
 			
 			entry = index[lc];
 			if (!entry) {
@@ -488,12 +603,15 @@ if (id > 0) {
 /**
  * search.js
  */
-(function(tenk,$){
+(function(window,document,tenk,$,undefined){
 
 var
 	
 	// storage api
 	get = tenk.get,
+	
+	// stop words
+	stop = tenk.stop,
 	
 	// serialization api
 	stringify = JSON.stringify,
@@ -502,13 +620,103 @@ var
 	$results = $('.results dl'),
 	$input = $('.search input');
 
-// focus on the search input
-$(function(){
-	$input.focus();
-});
+/**
+ * normalize a set of scores.
+ * @param {object} scores Hash containing id/score pairs.
+ * @param {int} multiplier Number to multiply each score by prior to normalization (accounts for direction).
+ * @return {object} scores Hash containing id/normalized score pairs (highest is best, 0-1 range).
+ */
+function normalize(scores, multiplier) {
+	
+	if (multiplier === undefined) {
+		multiplier = 1;
+	}
+	
+	var
+		normalized = {},
+		id,
+		high,
+		low,
+		spread,
+		s;
+	
+	for (id in scores) {
+		s = normalized[id] = scores[id] * multiplier;
+		if (high === undefined || s > high) {
+			high = s;
+		}
+		if (low === undefined || s < low) {
+			low = s;
+		}
+	}
+	
+	spread = 1 / (high - low);
+	
+	for (id in normalized) {
+		normalized[id] = (normalized[id] - low) * spread;
+	}
+	
+	return normalized;
+}
 
-// search form behavior
-$('form').submit(function(e){
+/**
+ * count how many times the terms appear in the document
+ * @param {object} ids Hash in which keys are document ids (values unimportant).
+ * @param {array} terms List of search terms provided.
+ * @param {string} type The type of content to count ('s'election, 't'itle, 'p'riority, or 'c'ontent).
+ * @param {object} recordcache Hash mapping words to their localStorage values.
+ * @return {object} Hash of id/score pairs.
+ */
+function wordcount(ids, terms, type, recordcache) {
+	
+	if (!recordcache) {
+		recordcache = {};
+	}
+	
+	var
+		scores = {},
+		term,
+		record,
+		id,
+		entry,
+		positions;
+	
+	for (var i=0, l=terms.length; i<l; i++) {
+		
+		term = terms[i];
+		if (term.length > 2 && !stop[term]) {
+			
+			record = recordcache[term] || (recordcache[term] = get("W-" + term));
+			
+			for (id in ids) {
+				
+				entry = record[id];
+				if (entry) {
+					
+					positions = entry[type];
+					if (positions) {
+						if (scores[id] === undefined) {
+							scores[id] = 0;
+						}
+						scores[id] += (+positions.length);
+					}
+					
+				}
+				
+			}
+			
+		}
+		
+	}
+	
+	return scores;
+	
+}
+
+/**
+ * search form behavior
+ */
+function search(e) { 
 	
 	e.preventDefault();
 	
@@ -523,11 +731,9 @@ $('form').submit(function(e){
 		term,
 		record,
 		
-		// a document id
+		// matching document ids
+		ids = {},
 		id,
-		
-		// count how many searched terms appear in each document
-		hitcount = {},
 		
 		// record cache
 		recordcache = {};
@@ -535,12 +741,14 @@ $('form').submit(function(e){
 	// collect matching document ids
 	for (i=0, l=terms.length; i<l; i++) {
 		
-		term = terms[i].toLowerCase();
-		record = recordcache[term] || (recordcache[term] = get("W-" + term));
+		term = terms[i];
 		
-		if (record) {
-			for (id in record) {
-				hitcount[id] += 1;
+		if (!recordcache[term]) {
+			record = recordcache[term] = get("W-" + term);
+			if (record) {
+				for (id in record) {
+					ids[id] += 1;
+				}
 			}
 		}
 		
@@ -561,7 +769,7 @@ $('form').submit(function(e){
 	// Display search results, highlighted appropriately
 	$results.empty();
 	var re = new RegExp('(.*?\\b)(' + terms.join('|') + ')(\\b.*)');
-	for (id in hitcount) {
+	for (id in ids) {
 		
 		var
 			url = get("ID-" + id),
@@ -613,8 +821,19 @@ $('form').submit(function(e){
 		);
 	}
 	
+}
+
+// attach search action to form submission
+$('form').submit(search);
+
+// focus on the search input
+$(function(){
+	$input.focus();
 });
 
+// exports
+tenk.wordcount = wordcount;
+tenk.normalize = normalize;
 
-})(window['10kse'],jQuery);
+})(window,document,window['10kse'],jQuery);
 
