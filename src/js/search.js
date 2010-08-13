@@ -1,7 +1,7 @@
 /**
  * search.js
  */
-(function(tenk,$){
+(function(tenk,$,undefined){
 
 var
 	
@@ -15,13 +15,49 @@ var
 	$results = $('.results dl'),
 	$input = $('.search input');
 
-// focus on the search input
-$(function(){
-	$input.focus();
-});
+/**
+ * normalize a set of scores.
+ * @param {object} scores Hash containing id/score pairs.
+ * @param {int} multiplier Number to multiply each score by prior to normalization (accounts for direction).
+ * @return {object} scores Hash containing id/normalized score pairs (highest is best, 0-1 range).
+ */
+function normalize(scores, multiplier) {
+	
+	if (multiplier === undefined) {
+		multiplier = 1;
+	}
+	
+	var
+		normalized = {},
+		id,
+		high,
+		low,
+		spread,
+		s;
+	
+	for (id in scores) {
+		s = normalized[id] = scores[id] * multiplier;
+		if (high === undefined || s > high) {
+			high = s;
+		}
+		if (low === undefined || s < low) {
+			low = s;
+		}
+	}
+	
+	spread = 1 / (high - low);
+	
+	for (id in normalized) {
+		normalized[id] = (normalized[id] - low) * spread;
+	}
+	
+	return normalized;
+}
 
-// search form behavior
-$('form').submit(function(e){
+/**
+ * search form behavior
+ */
+function search(e) { 
 	
 	e.preventDefault();
 	
@@ -36,11 +72,9 @@ $('form').submit(function(e){
 		term,
 		record,
 		
-		// a document id
+		// matching document ids
+		ids = {},
 		id,
-		
-		// count how many searched terms appear in each document
-		hitcount = {},
 		
 		// record cache
 		recordcache = {};
@@ -48,16 +82,20 @@ $('form').submit(function(e){
 	// collect matching document ids
 	for (i=0, l=terms.length; i<l; i++) {
 		
-		term = terms[i].toLowerCase();
-		record = recordcache[term] || (recordcache[term] = get("W-" + term));
+		term = terms[i];
 		
-		if (record) {
-			for (id in record) {
-				hitcount[id] += 1;
+		if (!recordcache[term]) {
+			record = recordcache[term] = get("W-" + term);
+			if (record) {
+				for (id in record) {
+					ids[id] += 1;
+				}
 			}
 		}
 		
 	}
+	
+	
 	
 	// Implement these raw score algorithms (input term and document, output score number):
 	//   * count of terms present in text (simple hit count)
@@ -74,7 +112,7 @@ $('form').submit(function(e){
 	// Display search results, highlighted appropriately
 	$results.empty();
 	var re = new RegExp('(.*?\\b)(' + terms.join('|') + ')(\\b.*)');
-	for (id in hitcount) {
+	for (id in ids) {
 		
 		var
 			url = get("ID-" + id),
@@ -126,8 +164,15 @@ $('form').submit(function(e){
 		);
 	}
 	
-});
+}
 
+// attach search action to form submission
+$('form').submit(search);
+
+// focus on the search input
+$(function(){
+	$input.focus();
+});
 
 })(window['10kse'],jQuery);
 
