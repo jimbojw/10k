@@ -1,3 +1,5 @@
-cat dist/index.html | java -jar build/js.jar build/data-to-pgm.js > test/data.pgm 
-convert test/data.pgm test/data.png
-pngcrush test/data.png test/crushed.png
+#!/bin/bash
+mkdir -p dist/image
+cat dist/index.html | java -jar build/js.jar build/data-to-pgm.js > dist/image/data.pgm 
+convert dist/image/data.pgm dist/image/data.png
+pngcrush dist/image/data.png dist/image/crushed.png
