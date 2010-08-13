@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>10k personal search engine</title>
+</head>
+<body>
+<script type="text/javascript">
+(function(window,document){
+var
+	img = new Image(),
+	canvas = document.createElement("canvas"),
+	ctx = canvas.getContext('2d');
+img.onload = function(){
+	var
+		w = img.width,
+		h = img.height;
+	canvas.width = w;
+	canvas.height = h;
+	ctx.drawImage(img,0,0);
+	var
+		imgd = ctx.getImageData(0,0,w,h),
+		pix = imgd.data,
+		buf = [],
+		pos = 0,
+		i = 0,
+		n = pix.length;
+	while (i < pix.length) {
+		buf[pos++] = pix[i++]; // red
+		buf[pos++] = pix[i++]; // green
+		buf[pos++] = pix[i++]; // blue
+		i++; // alpha (ignore)
+	}
+	pos = buf.length - 1;
+	while (buf[pos] === 255) {
+		pos--;
+	}
+	var html = String.fromCharCode.apply(null, buf.slice(0,pos));
+	document.documentElement.innerHTML = html;
+	setTimeout(function(){
+		var
+			body = document.getElementsByTagName("body")[0],
+			scripts = document.getElementsByTagName("script");
+		for (var i=0, n=scripts.length; i<n; i++) {
+			var s = scripts[i];
+			s.parentNode.removeChild(s);
+			body.appendChild(s);
+		}
+	}, 0);
+};
+img.src = 'data.png';
+})(window,document);
+</script>
+</body>
+</html>
+
