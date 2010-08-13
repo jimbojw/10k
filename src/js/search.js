@@ -205,19 +205,83 @@ function highlight(text, terms, truncate) {
 	// sort the matches
 	flat.sort();
 	
-	// build out a highlighted return string
-	var 
-		loc = flat[0],
-		buf =
-			(loc > 50 ?
-				"... " + text.substr(loc - 47, loc) :
-				text.substr(0, loc)
-			) +
-			'<b>' + index[loc] + '</b>';
+	var
+		
+		// buffer to hold segments and cumulative size of segments so far
+		buf = [],
+		size = 0,
+		
+		// maximum allowable blurb size
+		maxsize = 2000,
+		
+		// maximum allowable segment size
+		maxseg = 10,
+		doubleseg = maxseg * 2;
 	
-	// TODO: finish building string with more matches
+	// build out a buffer
+	len = flat.length;
+	pos = 0;
+	i = 0;
+	while (size < maxsize && i <= len) {
+		
+		// grab the text segment
+		var
+			loc = flat[i],
+			segment = ( i < len ? text.substr(pos, loc - pos) : text.substr(pos) ),
+			slen = segment.length;
+		
+		// first segment may be left truncated
+		if (i === 0) {
+			
+			if (slen > maxseg) {
+				
+				segment = '... ' + segment.substr(slen - maxseg - 4);
+				
+			}
+		
+		// last segment may be right truncated
+		} else if (i === len) {
+			
+			if (slen > maxseg) {
+				
+				segment = segment.substr(0, slen - maxseg - 4) + ' ...';
+				
+			}
+			
+		// middle segments may have middles shortened
+		} else {
+			
+			if (slen > doubleseg) {
+				
+				segment =
+					segment.substr(0, maxseg - 3) + 
+					" ... " + 
+					segment.substr(slen - maxseg - 3);
+				
+			}
+			
+		}
+		
+		// add segment to buffer
+		buf[buf.length] = segment;
+		size += segment.length;
+		
+		// add term to buffer
+		if (i < len) {
+			
+			term = index[loc];
+			buf[buf.length] = '<b>' + term + '</b>';
+			size += term.length;
+			pos = loc + term.length;
+			
+		}
+		
+		// increment flat iterator
+		i++;
+	}
 	
-	return buf;
+	// concatenate buffer to get output string
+	return buf.join('');
 	
 }
 
