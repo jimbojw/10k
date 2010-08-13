@@ -206,13 +206,14 @@ function highlight(text, terms, truncate) {
 	flat.sort();
 	
 	// build out a highlighted return string
-	pos = flat[0];
-	var buf =
-		(pos > 50 ?
-			"... " + text.substr(pos - 47, pos) :
-			text.substr(0, pos)
-		) +
-		'<b>' + index[pos] + '</b>';
+	var 
+		loc = flat[0],
+		buf =
+			(loc > 50 ?
+				"... " + text.substr(loc - 47, loc) :
+				text.substr(0, loc)
+			) +
+			'<b>' + index[loc] + '</b>';
 	
 	// TODO: finish building string with more matches
 	
