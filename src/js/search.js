@@ -212,10 +212,10 @@ function highlight(text, terms, truncate) {
 		size = 0,
 		
 		// maximum allowable blurb size
-		maxsize = 2000,
+		maxsize = 200,
 		
 		// maximum allowable segment size
-		maxseg = 10,
+		maxseg = 50,
 		doubleseg = maxseg * 2;
 	
 	// build out a buffer
@@ -230,33 +230,38 @@ function highlight(text, terms, truncate) {
 			segment = ( i < len ? text.substr(pos, loc - pos) : text.substr(pos) ),
 			slen = segment.length;
 		
-		// first segment may be left truncated
-		if (i === 0) {
+		// truncate the segment if it's too long
+		if (truncate) {
 			
-			if (slen > maxseg) {
+			// first segment may be left truncated
+			if (i === 0) {
 				
-				segment = '... ' + segment.substr(slen - maxseg - 4);
-				
-			}
-		
-		// last segment may be right truncated
-		} else if (i === len) {
+				if (slen > maxseg) {
+					
+					segment = '... ' + segment.substr(slen - maxseg - 4);
+					
+				}
 			
-			if (slen > maxseg) {
+			// last segment may be right truncated
+			} else if (i === len) {
 				
-				segment = segment.substr(0, slen - maxseg - 4) + ' ...';
+				if (slen > maxseg) {
+					
+					segment = segment.substr(0, maxseg - 4) + ' ...';
+					
+				}
 				
-			}
-			
-		// middle segments may have middles shortened
-		} else {
-			
-			if (slen > doubleseg) {
+			// middle segments may have middles shortened
+			} else {
 				
-				segment =
-					segment.substr(0, maxseg - 3) + 
-					" ... " + 
-					segment.substr(slen - maxseg - 3);
+				if (slen > doubleseg) {
+					
+					segment =
+						segment.substr(0, maxseg - 3) + 
+						" ... " + 
+						segment.substr(slen - maxseg - 3);
+					
+				}
 				
 			}
 			
@@ -278,6 +283,11 @@ function highlight(text, terms, truncate) {
 		
 		// increment flat iterator
 		i++;
+	}
+	
+	// trailing ellipse if early break
+	if (size >= maxsize) {
+		buf[buf.length] = " ...";
 	}
 	
 	// concatenate buffer to get output string
@@ -338,58 +348,24 @@ function search(e) {
 	
 	// Determine useful weightings
 	
-	// Display search results, highlighted appropriately
+	// Display search results, highlighted accordingly
 	$results.empty();
-	var re = new RegExp('(.*?\\b)(' + terms.join('|') + ')(\\b.*)');
 	for (id in ids) {
 		
 		var
 			url = get("ID-" + id),
 			doc = get("URL-" + url),
-			text = doc.text,
-			buf = [],
-			pos = 0,
-			size = 0,
-			match = text.match(re);
-		
-		// split text on matches
-		while (match) {
-			buf[pos++] = match[1];
-			buf[pos++] = match[2];
-			size += match[1].length + match[2].length;
-			text = match[3];
-			match = text.match(re);
-			if (pos > 10 || size > 300) {
-				break;
-			}
-		}
-		buf[pos++] = text;
-		
-		// build output
-		var $dd = $('<dd></dd>');
-		for (i=0; i<pos; i++) {	
-			if (i % 2) {
-				$dd.append($('<strong></strong>').text(buf[i]));
-			} else {
-				var seg = buf[i];
-				if (seg.length > 100) {
-					seg =
-						(i ? seg.substr(0, 47) : '') +
-						' ... ' + 
-						(i < pos - 1 ? seg.substr(seg.length - 47) : '');
-				}
-				$dd.append(document.createTextNode(seg));
-			}
-		}
+			text = doc.text;
 		
 		$results.append(
 			$('<dt><a></a></dt>')
 				.find('a')
 					.attr('href', url)
 					.attr('title', doc.title)
-					.text(doc.title)
+					.text(highlight(doc.title, terms, false))
 				.end(),
-			$dd
+			$('<dd></dd>')
+				.html(highlight(text, terms))
 		);
 	}
 	
