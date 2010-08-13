@@ -13,7 +13,7 @@ var
 	nonword = /[^0-9a-z_]+/i,
 	
 	// so-called "stop" words (uninteresting to search)
-	stop = /able|about|across|after|all|almost|also|among|and|any|are|because|been|but|can|cannot|could|dear|did|does|either|else|ever|every|for|from|get|got|had|has|have|her|hers|him|his|how|however|into|its|just|least|let|like|likely|may|might|most|must|neither|nor|not|off|often|only|other|our|own|rather|said|say|says|she|should|since|some|than|that|the|their|them|then|there|these|they|this|tis|too|twas|wants|was|were|what|when|where|which|while|who|whom|why|will|with|would|yet|you|your/i;
+	stop = tenk.stop;
 
 /**
  * extract meaningful words and their positions from input text (create an inverted index).
@@ -50,10 +50,10 @@ function extract(text) {
 		
 		pos++;
 		word = words[i];
+		lc = word.toLowerCase();
 		
-		if (word.length > 2 && !(stop).test(word)) {
+		if (word.length > 2 && !stop[lc]) {
 			
-			lc = word.toLowerCase();
 			
 			entry = index[lc];
 			if (!entry) {
