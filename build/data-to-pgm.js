@@ -23,30 +23,22 @@ buf = lines.join("\n");
 var
 	len = buf.length,
 	px = Math.ceil(len / 3),
-	w = Math.ceil(Math.sqrt(px)),
-	h = Math.ceil(px / w);
+	w = px * 3;
 
 // headers
 print("P3");
 print("# data as pgm");
-print(w + " " + h);
+print(px + " " + 1);
 print(255);
 
 // data
 var pos = 0;
-for (var j=0 ; j<h; j++) {
-	var row = [];
-	for (var i=0; i<w; i++) {
-		var
-			red = buf.charCodeAt(pos++),
-			blue = buf.charCodeAt(pos++),
-			green = buf.charCodeAt(pos++);
-		red = (isNaN(red) ? 255 : red);
-		blue = (isNaN(blue) ? 255 : blue);
-		green = (isNaN(green) ? 255 : green);
-		row[i] = [red, blue, green].join(" ");
-	}
-	print(row.join(" "));
+while (pos < len) {
+	print(buf.charCodeAt(pos++));
+}
+switch (pos % 3) {
+	case 1: print(255);
+	case 2: print(255);
 }
 
 }).apply(this, arguments);
