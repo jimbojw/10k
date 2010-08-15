@@ -146,26 +146,30 @@ function highlight(text, terms, truncate) {
 		
 		// iteration vars
 		i,
-		l;
+		l,
+		
+		// term being evaluated;
+		term,
+		len,
+		
+		// count of how many of this term have been found
+		count,
+		
+		// current position
+		pos;
 	
 	// find first few positions of terms
 	for (i=0, l=terms.length; i<l; i++) {
 		
-		var 
-			term = terms[i],
-			len = term.length;
+		term = terms[i];
+		len = term.length;
 		
 		if (len > 2 && !seen[term]) {
 			
 			seen[term] = true;
 			
-			var
-				
-				// count of how many of this term have been found
-				count = 0,
-				
-				// latest position
-				pos = 0;
+			count = 0;
+			pos = 0;
 			
 			while (count < limit) {
 				
