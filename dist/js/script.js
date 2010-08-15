@@ -608,13 +608,18 @@ if (id > 0) {
 /**
  * normalize a set of scores.
  * @param {object} scores Hash containing id/score pairs.
- * @param {int} multiplier Number to multiply each score by prior to normalization (accounts for direction).
+ * @param {int} multiplier Number to multiply each score by prior to normalization (accounts for direction, -1 for lower-is-better).
+ * @param {float} fallback Fall back value to use if all the scores are identical (defaults to 0.5).
  * @return {object} scores Hash containing id/normalized score pairs (highest is best, 0-1 range).
  */
-function normalize(scores, multiplier) {
+function normalize(scores, multiplier, fallback) {
 	
 	if (multiplier === undefined) {
 		multiplier = 1;
+	}
+	
+	if (fallback === undefined) {
+		fallback = 0.5;
 	}
 	
 	var
@@ -633,6 +638,13 @@ function normalize(scores, multiplier) {
 		if (low === undefined || s < low) {
 			low = s;
 		}
+	}
+	
+	if (high === low) {
+		for (id in normalized) {
+			normalized[id] = fallback;
+		}
+		return normalized;
 	}
 	
 	spread = 1 / (high - low);
@@ -903,12 +915,12 @@ function highlight(text, terms, truncate) {
 	}
 	
 	// trailing ellipse if early break
-	if (size >= maxsize) {
+	if (size >= maxsize && i <= len) {
 		buf[buf.length] = " ...";
 	}
 	
 	// concatenate buffer to get output string
-	return buf.join('');
+	return buf.join(' ');
 	
 }
 
@@ -921,8 +933,11 @@ function search(e) {
 	
 	var
 		
+		// retrieve search query
+		query = $input.val() || '',
+		
 		// extract terms from supplied search input string
-		terms = ($input.val() || '').toLowerCase().split(/[^a-z0-9_]/),
+		terms = query.toLowerCase().split(/[^a-z0-9_]/),
 		
 		// iteration vars
 		i,
@@ -946,12 +961,80 @@ function search(e) {
 			record = recordcache[term] = get("W-" + term);
 			if (record) {
 				for (id in record) {
-					ids[id] += 1;
+					ids[id] = (ids[id] || 0) + 1;
 				}
 			}
 		}
 		
 	}
+	
+	var
+		
+		// references to library functions
+		wordcount = tenk.wordcount,
+		normalize = tenk.normalize,
+		
+		// scoring
+		rankings = [
+			
+			// count the number of terms in the query which appear at least once
+			[1.0, normalize(ids)],
+			
+			// count number of times terms appear in the documents
+			[1.0, normalize(wordcount(ids, terms, "s", recordcache))],
+			[1.0, normalize(wordcount(ids, terms, "t", recordcache))],
+			[1.0, normalize(wordcount(ids, terms, "p", recordcache))],
+			[1.0, normalize(wordcount(ids, terms, "c", recordcache))]
+			
+		],
+		
+		totals = {};
+	
+	// aggregate scores
+	for (i=0, l=rankings.length; i<l; i++) {
+		
+		var
+			pair = rankings[i],
+			weight = pair[0],
+			scores = pair[1];
+		
+		for (id in scores) {
+			
+			if (!totals[id]) {
+				totals[id] = 0;
+			}
+			
+			totals[id] += weight * scores[id];
+			
+		}
+	}
+	
+	var
+		
+		// list of scores, and count of number
+		ranks = [],
+		count = 0,
+		
+		// inverted index mapping scores to ids
+		inverse = {},
+		
+		// weighted total score
+		score,
+		
+		// entry in the inverse ranks table
+		entry;
+	
+	// invert id/scores for display
+	for (id in totals) {
+		score = totals[id];
+		entry = inverse[score] || (inverse[score] = []);
+		entry[entry.length] = id;
+		ranks[count++] = score;
+	}
+	
+	// sort matches by rank, descending
+	ranks.sort();
+	ranks.reverse();
 	
 	// Implement these raw score algorithms (input term and document, output score number):
 	//   * count of terms present in text (simple hit count)
@@ -963,27 +1046,44 @@ function search(e) {
 	//   * priority
 	//   * content
 	
-	// Determine useful weightings
-	
-	// Display search results, highlighted accordingly
+	// display search results in rank order, highlighted accordingly
+	var last = null;
 	$results.empty();
-	for (id in ids) {
+	for (i=0, l=ranks.length; i<l; i++) {
 		
-		var
-			url = get("ID-" + id),
-			doc = get("URL-" + url),
-			text = doc.text;
+		score = ranks[i];
+		if (score !== last) {
+			
+			last = score;
+			entry = inverse[score];
+			
+			for (var j=0, m=entry.length; j<m; j++) {
+				
+				id = entry[j];
+				
+				var
+					url = get("ID-" + id),
+					doc = get("URL-" + url),
+					text = doc.text;
+				
+				$results.append(
+					$('<dt><a></a></dt>')
+						.find('a')
+							.attr('href', url)
+							.attr('title', doc.title)
+							.html(highlight(doc.title, terms, false))
+						.end(),
+					$('<dd><p></p></dd>')
+						.find('p')
+							.html(highlight(text, terms))
+						.end()
+						.append('<p><strong>Score: ' + totals[id] + '</strong></p>')
+				);
+				
+			}
+			
+		}
 		
-		$results.append(
-			$('<dt><a></a></dt>')
-				.find('a')
-					.attr('href', url)
-					.attr('title', doc.title)
-					.text(highlight(doc.title, terms, false))
-				.end(),
-			$('<dd></dd>')
-				.html(highlight(text, terms))
-		);
 	}
 	
 }
