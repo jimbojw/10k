@@ -601,27 +601,9 @@ if (id > 0) {
 })(window['10kse'],jQuery,window);
 
 /**
- * search.js
+ * ranking.js
  */
-(function(window,document,tenk,$,undefined){
-
-var
-	
-	// storage api
-	get = tenk.get,
-	
-	// stop words
-	stop = tenk.stop,
-	
-	// serialization api
-	stringify = JSON.stringify,
-	
-	// cached jquery results
-	$results = $('.results dl'),
-	$input = $('.search input'),
-	
-	// scratch pad for html special character conversion
-	$scratch = $('<div></div>');
+(function(tenk,undefined){
 
 /**
  * normalize a set of scores.
@@ -715,6 +697,35 @@ function wordcount(ids, terms, type, recordcache) {
 	return scores;
 	
 }
+
+// exports
+tenk.wordcount = wordcount;
+tenk.normalize = normalize;
+
+})(window['10kse']);
+
+/**
+ * search.js
+ */
+(function(window,document,tenk,$,undefined){
+
+var
+	
+	// storage api
+	get = tenk.get,
+	
+	// stop words
+	stop = tenk.stop,
+	
+	// serialization api
+	stringify = JSON.stringify,
+	
+	// cached jquery results
+	$results = $('.results dl'),
+	$input = $('.search input'),
+	
+	// scratch pad for html special character conversion
+	$scratch = $('<div></div>');
 
 /**
  * highlight terms in the provided text.
@@ -986,8 +997,6 @@ $(function(){
 });
 
 // exports
-tenk.wordcount = wordcount;
-tenk.normalize = normalize;
 tenk.highlight = highlight;
 
 })(window,document,window['10kse'],jQuery);
