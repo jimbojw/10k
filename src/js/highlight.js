@@ -22,10 +22,12 @@ function highlight(text, terms, truncate) {
 	}
 	
 	// convert html special characters to entities
-	text = $scratch.text(text).html(),
-	lc = text.toLowerCase();
+	text = $scratch.text(text).html();
 	
 	var
+		
+		// lowercase version of text for performing indexOf lookups
+		lc = text.toLowerCase(),
 		
 		// memory of whether we've seen this term before
 		seen = {},
