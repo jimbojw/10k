@@ -79,7 +79,7 @@ test("case differences", function() {
 
 test("sentence highlighting", function() {
 	
-	expect(2);
+	expect(3);
 	
 	equals(
 		highlight(
@@ -95,6 +95,14 @@ test("sentence highlighting", function() {
 			["over", "brown"]
 		),
 		"The quick <b>brown</b> fox jumped <b>over</b> the lazy dog.",
+		"highlighting 'over', 'brown'");
+	
+	equals(
+		highlight(
+			"The quick brown fox jumped over the lazy dog.",
+			["fox", "jumped"]
+		),
+		"The quick brown <b>fox</b> <b>jumped</b> over the lazy dog.",
 		"highlighting 'over', 'brown'");
 	
 });
@@ -117,7 +125,7 @@ test("truncation", function() {
 
 test("real-life examples", function() {
 	
-	expect(1);
+	expect(2);
 	
 	equals(
 		highlight(
@@ -126,6 +134,14 @@ test("real-life examples", function() {
 		),
 		"ZSI: The <b>Zolera</b> <b>Soap</b> Infrastructure",
 		"highlighting 'zolera' and 'soap' in the page title");
+	
+	equals(
+		highlight(
+			"boto - Project Hosting on Google Code",
+			["hosting", "project"]
+		),
+		"boto - <b>Project</b> <b>Hosting</b> on Google Code",
+		"highlighting 'project' and 'hosting' in the page title");
 	
 });
 
