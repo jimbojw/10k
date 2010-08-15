@@ -298,13 +298,26 @@ function search(e) {
 		count = 0,
 		
 		// inverted index mapping scores to ids
-		inverse = {};
+		inverse = {},
+		
+		// weighted total score
+		score,
+		
+		// entry in the inverse ranks table
+		entry;
 	
 	// invert id/scores for display
 	for (id in totals) {
-		ranks[count++] = totals[id];
+		var
+			score = totals[id],
+			entry = inverse[score] || (inverse[score] = []);
+		entry[entry.length] = id;
+		ranks[count++] = score;
 	}
 	
+	// sort matches by rank, descending
+	ranks.sort();
+	ranks.reverse();
 	
 	// Implement these raw score algorithms (input term and document, output score number):
 	//   * count of terms present in text (simple hit count)
@@ -316,30 +329,44 @@ function search(e) {
 	//   * priority
 	//   * content
 	
-	// Determine useful weightings
-	
-	// Display search results, highlighted accordingly
+	// display search results in rank order, highlighted accordingly
+	var last = null;
 	$results.empty();
-	for (id in ids) {
+	for (i=0, l=ranks.length; i<l; i++) {
 		
-		var
-			url = get("ID-" + id),
-			doc = get("URL-" + url),
-			text = doc.text;
+		score = ranks[i];
+		if (score !== last) {
+			
+			last = score;
+			entry = inverse[score];
+			
+			for (var j=0, m=entry.length; j<m; j++) {
+				
+				id = entry[j];
+				
+				var
+					url = get("ID-" + id),
+					doc = get("URL-" + url),
+					text = doc.text;
+				
+				$results.append(
+					$('<dt><a></a></dt>')
+						.find('a')
+							.attr('href', url)
+							.attr('title', doc.title)
+							.html(highlight(doc.title, terms, false))
+						.end(),
+					$('<dd><p></p></dd>')
+						.find('p')
+							.html(highlight(text, terms))
+						.end()
+						.append('<p><strong>Score: ' + totals[id] + '</strong></p>')
+				);
+				
+			}
+			
+		}
 		
-		$results.append(
-			$('<dt><a></a></dt>')
-				.find('a')
-					.attr('href', url)
-					.attr('title', doc.title)
-					.text(highlight(doc.title, terms, false))
-				.end(),
-			$('<dd><p></p></dd>')
-				.find('p')
-					.html(highlight(text, terms))
-				.end()
-				.append('<p><strong>Score: ' + totals[id] + '</strong></p>')
-		);
 	}
 	
 }
