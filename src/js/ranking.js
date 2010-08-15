@@ -3,6 +3,11 @@
  */
 (function(tenk,undefined){
 
+var
+	
+	// storage api
+	get = tenk.get;
+
 /**
  * normalize a set of scores.
  * @param {object} scores Hash containing id/score pairs.
