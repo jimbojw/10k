@@ -197,12 +197,12 @@ function highlight(text, terms, truncate) {
 	}
 	
 	// trailing ellipse if early break
-	if (size >= maxsize) {
+	if (size >= maxsize && i <= len) {
 		buf[buf.length] = " ...";
 	}
 	
 	// concatenate buffer to get output string
-	return buf.join('');
+	return buf.join(' ');
 	
 }
 
@@ -215,8 +215,11 @@ function search(e) {
 	
 	var
 		
+		// retrieve search query
+		query = $input.val() || '',
+		
 		// extract terms from supplied search input string
-		terms = ($input.val() || '').toLowerCase().split(/[^a-z0-9_]/),
+		terms = query.toLowerCase().split(/[^a-z0-9_]/),
 		
 		// iteration vars
 		i,
@@ -240,12 +243,68 @@ function search(e) {
 			record = recordcache[term] = get("W-" + term);
 			if (record) {
 				for (id in record) {
-					ids[id] += 1;
+					ids[id] = (ids[id] || 0) + 1;
 				}
 			}
 		}
 		
 	}
+	
+	var
+		
+		// references to library functions
+		wordcount = tenk.wordcount,
+		normalize = tenk.normalize,
+		
+		// scoring
+		rankings = [
+			
+			// count the number of terms in the query which appear at least once
+			[1.0, normalize(ids)],
+			
+			// count number of times terms appear in the documents
+			[1.0, normalize(wordcount(ids, terms, "s", recordcache))],
+			[1.0, normalize(wordcount(ids, terms, "t", recordcache))],
+			[1.0, normalize(wordcount(ids, terms, "p", recordcache))],
+			[1.0, normalize(wordcount(ids, terms, "c", recordcache))]
+			
+		],
+		
+		totals = {};
+	
+	// aggregate scores
+	for (i=0, l=rankings.length; i<l; i++) {
+		
+		var
+			pair = rankings[i],
+			weight = pair[0],
+			scores = pair[1];
+		
+		for (id in scores) {
+			
+			if (!totals[id]) {
+				totals[id] = 0;
+			}
+			
+			totals[id] += weight * scores[id];
+			
+		}
+	}
+	
+	var
+		
+		// list of scores, and count of number
+		ranks = [],
+		count = 0,
+		
+		// inverted index mapping scores to ids
+		inverse = {};
+	
+	// invert id/scores for display
+	for (id in totals) {
+		ranks[count++] = totals[id];
+	}
+	
 	
 	// Implement these raw score algorithms (input term and document, output score number):
 	//   * count of terms present in text (simple hit count)
@@ -275,8 +334,11 @@ function search(e) {
 					.attr('title', doc.title)
 					.text(highlight(doc.title, terms, false))
 				.end(),
-			$('<dd></dd>')
-				.html(highlight(text, terms))
+			$('<dd><p></p></dd>')
+				.find('p')
+					.html(highlight(text, terms))
+				.end()
+				.append('<p><strong>Score: ' + totals[id] + '</strong></p>')
 		);
 	}
 	
