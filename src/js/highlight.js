@@ -22,7 +22,8 @@ function highlight(text, terms, truncate) {
 	}
 	
 	// convert html special characters to entities
-	text = $scratch.text(text).html();
+	text = $scratch.text(text).html(),
+	lc = text.toLowerCase();
 	
 	var
 		
@@ -55,7 +56,7 @@ function highlight(text, terms, truncate) {
 	// find first few positions of terms
 	for (i=0, l=terms.length; i<l; i++) {
 		
-		term = terms[i];
+		term = terms[i].toLowerCase();
 		len = term.length;
 		
 		if (len > 2 && !seen[term]) {
@@ -68,7 +69,7 @@ function highlight(text, terms, truncate) {
 			while (count < limit) {
 				
 				// find the next match
-				pos = text.indexOf(term, pos);
+				pos = lc.indexOf(term, pos);
 				
 				// abort if there are none
 				if (pos === -1) {
@@ -173,7 +174,7 @@ function highlight(text, terms, truncate) {
 		if (i < len) {
 			
 			term = index[loc];
-			buf[buf.length] = '<b>' + term + '</b>';
+			buf[buf.length] = '<b>' + text.substr(loc, term.length) + '</b>';
 			size += term.length;
 			pos = loc + term.length;
 			
