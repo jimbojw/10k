@@ -308,9 +308,8 @@ function search(e) {
 	
 	// invert id/scores for display
 	for (id in totals) {
-		var
-			score = totals[id],
-			entry = inverse[score] || (inverse[score] = []);
+		score = totals[id];
+		entry = inverse[score] || (inverse[score] = []);
 		entry[entry.length] = id;
 		ranks[count++] = score;
 	}
