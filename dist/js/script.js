@@ -852,21 +852,21 @@ function highlight(text, terms, truncate) {
 		// truncate the segment if it's too long
 		if (truncate) {
 			
-			// first segment may be left truncated
-			if (i === 0) {
-				
-				if (slen > maxseg) {
-					
-					segment = '... ' + segment.substr(slen - maxseg - 4);
-					
-				}
-			
 			// last segment may be right truncated
-			} else if (i === len) {
+			if (i === len) {
 				
 				if (slen > maxseg) {
 					
 					segment = segment.substr(0, maxseg - 4) + ' ...';
+					
+				}
+				
+			// first segment may be left truncated
+			} else if (i === 0) {
+				
+				if (slen > maxseg) {
+					
+					segment = '... ' + segment.substr(slen - maxseg - 4);
 					
 				}
 				
@@ -910,7 +910,7 @@ function highlight(text, terms, truncate) {
 	}
 	
 	// concatenate buffer to get output string
-	return buf.join(' ');
+	return buf.join('');
 	
 }
 
