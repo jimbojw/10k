@@ -197,8 +197,5 @@ $(function(){
 	$input.focus();
 });
 
-// exports
-tenk.highlight = highlight;
-
 })(window,document,window['10kse'],jQuery);
 
