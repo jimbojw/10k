@@ -14,6 +14,7 @@ JS_FILES = \
 	${SRC_DIR}/js/showall.js\
 	${SRC_DIR}/js/ranking.js\
 	${SRC_DIR}/js/highlight.js\
+	${SRC_DIR}/js/autocomplete.js\
 	${SRC_DIR}/js/search.js
 
 JS_OUT = ${DIST_DIR}/js/script.js
