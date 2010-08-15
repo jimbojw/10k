@@ -115,5 +115,19 @@ test("truncation", function() {
 	
 });
 
+test("real-life examples", function() {
+	
+	expect(1);
+	
+	equals(
+		highlight(
+			"ZSI: The Zolera Soap Infrastructure",
+			["zolera", "soap"]
+		),
+		"ZSI: The <b>Zolera</b> <b>Soap</b> Infrastructure",
+		"highlighting 'zolera' and 'soap' in the page title");
+	
+});
+
 })(window['10kse']);
 
