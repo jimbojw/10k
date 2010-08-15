@@ -6,13 +6,18 @@
 /**
  * normalize a set of scores.
  * @param {object} scores Hash containing id/score pairs.
- * @param {int} multiplier Number to multiply each score by prior to normalization (accounts for direction).
+ * @param {int} multiplier Number to multiply each score by prior to normalization (accounts for direction, -1 for lower-is-better).
+ * @param {float} fallback Fall back value to use if all the scores are identical (defaults to 0.5).
  * @return {object} scores Hash containing id/normalized score pairs (highest is best, 0-1 range).
  */
-function normalize(scores, multiplier) {
+function normalize(scores, multiplier, fallback) {
 	
 	if (multiplier === undefined) {
 		multiplier = 1;
+	}
+	
+	if (fallback === undefined) {
+		fallback = 0.5;
 	}
 	
 	var
@@ -31,6 +36,13 @@ function normalize(scores, multiplier) {
 		if (low === undefined || s < low) {
 			low = s;
 		}
+	}
+	
+	if (high === low) {
+		for (id in normalized) {
+			normalized[id] = fallback;
+		}
+		return normalized;
 	}
 	
 	spread = 1 / (high - low);
