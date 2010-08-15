@@ -40,7 +40,15 @@ function set(key, value) {
 	return storage.setItem(key, stringify(value));
 }
 
+/**
+ * numeric difference - used in sorting arrays numerically.
+ */
+function asc(a,b){
+	return a - b;
+}
+
 // exports
+tenk.asc = asc;
 tenk.get = get;
 tenk.set = set;
 tenk.stop = stop;

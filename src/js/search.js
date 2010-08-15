@@ -127,7 +127,7 @@ function search(e) {
 	}
 	
 	// sort matches by rank, descending
-	ranks.sort();
+	ranks.sort(tenk.asc);
 	ranks.reverse();
 	
 	// Implement these raw score algorithms (input term and document, output score number):

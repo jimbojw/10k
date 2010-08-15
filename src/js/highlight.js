@@ -104,7 +104,7 @@ function highlight(text, terms, truncate) {
 	}
 	
 	// sort the matches
-	flat.sort();
+	flat.sort(tenk.asc);
 	
 	var
 		
