@@ -717,24 +717,11 @@ tenk.normalize = normalize;
 })(window['10kse']);
 
 /**
- * search.js
+ * highlight.js
  */
-(function(window,document,tenk,$,undefined){
+(function(tenk,$,undefined){
 
 var
-	
-	// storage api
-	get = tenk.get,
-	
-	// stop words
-	stop = tenk.stop,
-	
-	// serialization api
-	stringify = JSON.stringify,
-	
-	// cached jquery results
-	$results = $('.results dl'),
-	$input = $('.search input'),
 	
 	// scratch pad for html special character conversion
 	$scratch = $('<div></div>');
@@ -756,6 +743,9 @@ function highlight(text, terms, truncate) {
 	text = $scratch.text(text).html();
 	
 	var
+		
+		// lowercase version of text for performing indexOf lookups
+		lc = text.toLowerCase(),
 		
 		// memory of whether we've seen this term before
 		seen = {},
@@ -786,7 +776,7 @@ function highlight(text, terms, truncate) {
 	// find first few positions of terms
 	for (i=0, l=terms.length; i<l; i++) {
 		
-		term = terms[i];
+		term = terms[i].toLowerCase();
 		len = term.length;
 		
 		if (len > 2 && !seen[term]) {
@@ -799,7 +789,7 @@ function highlight(text, terms, truncate) {
 			while (count < limit) {
 				
 				// find the next match
-				pos = text.indexOf(term, pos);
+				pos = lc.indexOf(term, pos);
 				
 				// abort if there are none
 				if (pos === -1) {
@@ -904,7 +894,7 @@ function highlight(text, terms, truncate) {
 		if (i < len) {
 			
 			term = index[loc];
-			buf[buf.length] = '<b>' + term + '</b>';
+			buf[buf.length] = '<b>' + text.substr(loc, term.length) + '</b>';
 			size += term.length;
 			pos = loc + term.length;
 			
@@ -923,6 +913,31 @@ function highlight(text, terms, truncate) {
 	return buf.join(' ');
 	
 }
+
+// exports
+tenk.highlight = highlight;
+
+})(window['10kse'],jQuery);
+
+/**
+ * search.js
+ */
+(function(window,document,tenk,$,undefined){
+
+var
+	
+	// storage api
+	get = tenk.get,
+	
+	// stop words
+	stop = tenk.stop,
+	
+	// serialization api
+	stringify = JSON.stringify,
+	
+	// cached jquery results
+	$results = $('.results dl'),
+	$input = $('.search input');
 
 /**
  * search form behavior
@@ -1046,8 +1061,15 @@ function search(e) {
 	//   * priority
 	//   * content
 	
+	var
+		
+		// highlight function
+		highlight = tenk.highlight,
+		
+		// last score 
+		last = null;
+	
 	// display search results in rank order, highlighted accordingly
-	var last = null;
 	$results.empty();
 	for (i=0, l=ranks.length; i<l; i++) {
 		
@@ -1077,7 +1099,7 @@ function search(e) {
 						.find('p')
 							.html(highlight(text, terms))
 						.end()
-						.append('<p><strong>Score: ' + totals[id] + '</strong></p>')
+						.append('<p><strong>Score: ' + (totals[id] + '').substr(0,4) + '</strong></p>')
 				);
 				
 			}
