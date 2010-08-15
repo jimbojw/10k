@@ -178,7 +178,7 @@ function search(e) {
 						.find('p')
 							.html(highlight(text, terms))
 						.end()
-						.append('<p><strong>Score: ' + totals[id] + '</strong></p>')
+						.append('<p><strong>Score: ' + (totals[id] + '').substr(0,4) + '</strong></p>')
 				);
 				
 			}
