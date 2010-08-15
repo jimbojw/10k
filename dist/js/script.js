@@ -40,7 +40,15 @@ function set(key, value) {
 	return storage.setItem(key, stringify(value));
 }
 
+/**
+ * numeric difference - used in sorting arrays numerically.
+ */
+function asc(a,b){
+	return a - b;
+}
+
 // exports
+tenk.asc = asc;
 tenk.get = get;
 tenk.set = set;
 tenk.stop = stop;
@@ -605,6 +613,11 @@ if (id > 0) {
  */
 (function(tenk,undefined){
 
+var
+	
+	// storage api
+	get = tenk.get;
+
 /**
  * normalize a set of scores.
  * @param {object} scores Hash containing id/score pairs.
@@ -822,7 +835,7 @@ function highlight(text, terms, truncate) {
 	}
 	
 	// sort the matches
-	flat.sort();
+	flat.sort(tenk.asc);
 	
 	var
 		
@@ -919,6 +932,49 @@ tenk.highlight = highlight;
 
 })(window['10kse'],jQuery);
 
+/**
+ * autocomplete.js - stripped-down implementation of autocomplete.
+ */
+(function(window,tenk,$,undefined){
+
+/**
+ * get array of suggestions based on input string.
+ * @param {string} query The value entered for which to find suggestions.
+ */
+function suggestions(query) {
+	
+	// TODO: implement me!!
+	
+}
+
+/**
+ * autocomplete instrumentation.
+ * @param {element} input The input element to autocomplete.
+ */
+function autocomplete(input) {
+	
+	// create drop-down structure
+	
+	// capture keyup and change on input
+		
+		// clear timeout if already set
+		
+		// set timeout for duration, then update choices
+		
+	// update choices
+		
+		// get suggestions
+		
+		// fill in suggestions in drop-down
+		
+	
+}
+
+// exports
+tenk.autocomplete = autocomplete;
+tenk.suggestions = suggestions;
+
+})(window,window['10kse'],jQuery);
 /**
  * search.js
  */
@@ -1048,7 +1104,7 @@ function search(e) {
 	}
 	
 	// sort matches by rank, descending
-	ranks.sort();
+	ranks.sort(tenk.asc);
 	ranks.reverse();
 	
 	// Implement these raw score algorithms (input term and document, output score number):
@@ -1117,9 +1173,6 @@ $('form').submit(search);
 $(function(){
 	$input.focus();
 });
-
-// exports
-tenk.highlight = highlight;
 
 })(window,document,window['10kse'],jQuery);
 
