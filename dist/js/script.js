@@ -950,7 +950,11 @@ var
 	// key codes
 	upkey = 38,
 	downkey = 40,
-	enterkey = 13;
+	enterkey = 13,
+	
+	// short-hand for common strings (aids compressibity)
+	selectedClass = 'selected';
+
 
 /**
  * get array of suggestions based on input string.
@@ -973,6 +977,20 @@ function suggest(query) {
 		query + 'd'
 	];
 	
+}
+
+/**
+ * given a target element, finds nearest 'li' parent, or self if it's already an 'li'
+ * @param {element} target A DOM element.
+ * @return {mixed} Either a jQuery result object, or null if there was no match.
+ */
+function targetli(target) {
+	
+	var
+		$target = $(target),
+		$li = $target.is('li') ? $target : $target.parent('li');
+	
+	return $li.length ? $li : null;
 }
 
 /**
@@ -1055,8 +1073,7 @@ function autocomplete(input) {
 		
 		var
 			value = $input.val(),
-			which = e.which,
-			sel = 'selected';
+			which = e.which;
 		
 		if (value !== previous) {
 			
@@ -1098,8 +1115,8 @@ function autocomplete(input) {
 					var $prev = $selected.prev();
 					if ($prev.length) {
 						
-						$selected.removeClass(sel);
-						$selected = $prev.addClass(sel);
+						$selected.removeClass(selectedClass);
+						$selected = $prev.addClass(selectedClass);
 						
 					}
 					
@@ -1108,8 +1125,8 @@ function autocomplete(input) {
 					var $next = $selected.next();
 					if ($next.length) {
 						
-						$selected.removeClass(sel);
-						$selected = $next.addClass(sel);
+						$selected.removeClass(selectedClass);
+						$selected = $next.addClass(selectedClass);
 						
 					}
 					
@@ -1117,7 +1134,7 @@ function autocomplete(input) {
 				
 			} else {
 				
-				$selected = $ul.find('li').eq(0).addClass(sel);
+				$selected = $ul.find('li').eq(0).addClass(selectedClass);
 				
 			}
 			
@@ -1158,6 +1175,36 @@ function autocomplete(input) {
 		// hide autocomplete suggestions when form is submitted
 		.parent('form')
 			.submit(select);
+	
+	/**
+	 * handler for mousing over autocomplete drop-down.
+	 */
+	function mouseover(e) {
+		
+		var $li = targetli(e.target);
+		
+		if ($li) {
+			
+			if ($selected) {
+				
+				if ($selected.get(0) !== $li.get(0)) {
+					
+					$selected.removeClass(selectedClass);
+					
+				}
+				
+			}
+			
+			$selected = $li.addClass(selectedClass);
+			
+		}
+		
+	}
+	
+	// wire up list for mouse interaction
+	$ul
+		.mouseover(mouseover)
+		.click(select);
 	
 }
 
