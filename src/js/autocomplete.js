@@ -19,7 +19,22 @@ function suggestions(query) {
  */
 function autocomplete(input) {
 	
-	// create drop-down structure
+	
+	var
+		
+		// grab input and position
+		$input = $(input),
+		offset = $input.offset(),
+		
+		// create drop-down structure
+		$dd = $('<div class="auto"><ul></ul></div>')
+			.css({
+				top: offset.top + input.offsetHeight,
+				left: offset.left,
+				width: input.offsetWidth,
+				display: 'none'
+			})
+			.appendTo(document.body);
 	
 	// capture keyup and change on input
 		
@@ -35,6 +50,11 @@ function autocomplete(input) {
 		
 	
 }
+
+// set up input box for autocompletion
+$('.search input').each(function(){
+	autocomplete(this);
+});
 
 // exports
 tenk.autocomplete = autocomplete;
