@@ -941,20 +941,9 @@ tenk.highlight = highlight;
 })(window['10kse'],jQuery);
 
 /**
- * autocomplete.js - stripped-down implementation of autocomplete.
+ * suggest.js
  */
-(function(window,tenk,$,undefined){
-
-var
-	
-	// key codes
-	upkey = 38,
-	downkey = 40,
-	enterkey = 13,
-	
-	// short-hand for common strings (aids compressibity)
-	selectedClass = 'selected';
-
+(function(tenk,undefined){
 
 /**
  * get array of suggestions based on input string.
@@ -978,6 +967,29 @@ function suggest(query) {
 	];
 	
 }
+
+// exports
+tenk.suggest = suggest;
+
+})(window['10kse']);
+/**
+ * autocomplete.js - stripped-down implementation of autocomplete.
+ */
+(function(window,tenk,$,undefined){
+
+var
+	
+	// key codes
+	upkey = 38,
+	downkey = 40,
+	enterkey = 13,
+	
+	// short-hand for common strings (aids compressibity)
+	selectedClass = 'selected',
+	
+	// suggest completions for string
+	suggest = tenk.suggest;
+
 
 /**
  * given a target element, finds nearest 'li' parent, or self if it's already an 'li'
@@ -1215,7 +1227,6 @@ $('.search input').each(function(){
 
 // exports
 tenk.autocomplete = autocomplete;
-tenk.suggest = suggest;
 
 })(window,window['10kse'],jQuery);
 /**
