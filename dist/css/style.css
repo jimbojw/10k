@@ -45,3 +45,33 @@ ul li {
 	margin-bottom: 0.5em;
 }
 
+/**
+ * autocomplete.css - styles relating to the autocomplete implementation.
+ */
+
+/* container div */
+.auto {
+	position: absolute;
+	height: 200px;
+	background: #fff;
+	padding: 0;
+	margin: 0;
+	border: none;
+}
+
+/* list of suggestions */
+.auto ul {
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+	border: 1px solid #ccc;
+}
+
+/* suggestions in the list */
+.auto li {
+	margin: 0;
+	padding: 0.25em 0.5em;
+}
+.auto .selected {
+	background: #f0f0f0;
+}
