@@ -7,9 +7,16 @@
  * get array of suggestions based on input string.
  * @param {string} query The value entered for which to find suggestions.
  */
-function suggestions(query) {
+function suggest(query) {
 	
 	// TODO: implement me!!
+	return [
+		query,
+		query + 'a',
+		query + 'b',
+		query + 'c',
+		query + 'd',
+	];
 	
 }
 
@@ -34,20 +41,75 @@ function autocomplete(input) {
 				width: input.offsetWidth,
 				display: 'none'
 			})
-			.appendTo(document.body);
+			.appendTo(document.body),
+		$ul = $dd.find('ul'),
+		
+		// previous input value
+		previous = '';
 	
-	// capture keyup and change on input
+	/**
+	 * update available choices.
+	 * @param {array} sugs List of suggestions.
+	 * @param {string} word Word typed to produce suggestions.
+	 */
+	function update(suggestions, word) {
 		
-		// clear timeout if already set
+		$ul.empty();
 		
-		// set timeout for duration, then update choices
+		var len = word.length;
 		
-	// update choices
+		// fill in suggestions
+		for (var i=0, l=suggestions.length; i<l; i++) {
+			
+			var suggestion = suggestions[i];
+			
+			$('<li><span></span></li>')
+				.appendTo($ul)
+				.find('span')
+					.html(
+						suggestion.split(word, 2).join('<b>' + word + '</b>')
+					);
+			
+		}
 		
-		// get suggestions
+		$dd.show();
 		
-		// fill in suggestions in drop-down
+	}
+	
+	/**
+	 * handler to capture modifications to input and key navigation.
+	 * @param {event} e The jQuery wrapped event that was fired.
+	 */
+	function modified(e) {
 		
+		var value = $input.val();
+		
+		if (value !== previous) {
+			
+			previous = value;
+			
+			var
+				
+				// extract last word of input
+				pos = value.lastIndexOf(' '),
+				word = value.substr(pos < 0 ? 0 : pos),
+				
+				// get suggestions
+				suggestions = suggest(word);
+			
+			// update choices
+			if (suggestions.length) {
+				update(suggestions, word.toLowerCase());
+			}
+			
+		}
+		
+	}
+	
+	// wire up modification handler
+	$input
+		.change(modified)
+		.keyup(modified);
 	
 }
 
@@ -58,6 +120,6 @@ $('.search input').each(function(){
 
 // exports
 tenk.autocomplete = autocomplete;
-tenk.suggestions = suggestions;
+tenk.suggest = suggest;
 
 })(window,window['10kse'],jQuery);
