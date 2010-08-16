@@ -86,23 +86,31 @@ function wordcount(ids, terms, type, recordcache) {
 		term = terms[i];
 		if (term.length > 2 && !stop[term]) {
 			
-			record = recordcache[term] || (recordcache[term] = get("W-" + term));
+			record = recordcache[term];
 			
-			for (id in ids) {
+			if (record === undefined) {
+				record = recordcache[term] = get("W-" + term);
+			}
+			
+			if (record) {
 				
-				entry = record[id];
-				if (entry) {
+				for (id in ids) {
+				
+					entry = record[id];
+					if (entry) {
 					
-					positions = entry[type];
-					if (positions) {
-						if (scores[id] === undefined) {
-							scores[id] = 0;
+						positions = entry[type];
+						if (positions) {
+							if (scores[id] === undefined) {
+								scores[id] = 0;
+							}
+							scores[id] += (+positions.length);
 						}
-						scores[id] += (+positions.length);
-					}
 					
-				}
+					}
 				
+				}
+			
 			}
 			
 		}
