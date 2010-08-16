@@ -11,31 +11,11 @@ var
 	enterkey = 13,
 	
 	// short-hand for common strings (aids compressibity)
-	selectedClass = 'selected';
+	selectedClass = 'selected',
+	
+	// suggest completions for string
+	suggest = tenk.suggest;
 
-
-/**
- * get array of suggestions based on input string.
- * @param {string} query The value entered for which to find suggestions.
- */
-function suggest(query) {
-	
-	query = query.replace(/^\s+|\s$/g, '');
-	
-	if (!query) {
-		return [];
-	}
-	
-	// TODO: implement me!!
-	return [
-		query,
-		query + 'a',
-		query + 'b',
-		query + 'c',
-		query + 'd'
-	];
-	
-}
 
 /**
  * given a target element, finds nearest 'li' parent, or self if it's already an 'li'
@@ -273,6 +253,5 @@ $('.search input').each(function(){
 
 // exports
 tenk.autocomplete = autocomplete;
-tenk.suggest = suggest;
 
 })(window,window['10kse'],jQuery);
