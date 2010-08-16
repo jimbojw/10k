@@ -3,11 +3,24 @@
  */
 (function(window,tenk,$,undefined){
 
+var
+	
+	// key codes
+	upkey = 38,
+	downkey = 40,
+	enterkey = 13;
+
 /**
  * get array of suggestions based on input string.
  * @param {string} query The value entered for which to find suggestions.
  */
 function suggest(query) {
+	
+	query = query.replace(/^\s+|\s$/g, '');
+	
+	if (!query) {
+		return [];
+	}
 	
 	// TODO: implement me!!
 	return [
@@ -26,7 +39,6 @@ function suggest(query) {
  */
 function autocomplete(input) {
 	
-	
 	var
 		
 		$input = $(input),
@@ -40,7 +52,29 @@ function autocomplete(input) {
 		$ul = $dd.find('ul'),
 		
 		// previous input value
-		previous = '';
+		previous = '',
+		
+		// currently selected option
+		$selected = null;
+	
+	/**
+	 * action to take when the user selects an option.
+	 */
+	function select() {
+		
+		if ($selected) {
+			
+			var
+				word = $selected.text(),
+				value = $input.val(),
+				pos = value.lastIndexOf(' ') + 1;
+			
+			$input.get(0).value = previous = value.substr(0, pos) + word;
+			
+			hide();
+		}
+		
+	}
 	
 	/**
 	 * update available choices.
@@ -51,18 +85,18 @@ function autocomplete(input) {
 		
 		$ul.empty();
 		
+		$selected = null;
+		
 		var len = word.length;
 		
 		// fill in suggestions
 		for (var i=0, l=suggestions.length; i<l; i++) {
 			
-			var suggestion = suggestions[i];
-			
 			$('<li><span></span></li>')
 				.appendTo($ul)
 				.find('span')
 					.html(
-						suggestion.split(word, 2).join('<b>' + word + '</b>')
+						suggestions[i].split(word, 2).join('<b>' + word + '</b>')
 					);
 			
 		}
@@ -77,7 +111,10 @@ function autocomplete(input) {
 	 */
 	function modified(e) {
 		
-		var value = $input.val();
+		var
+			value = $input.val(),
+			which = e.which,
+			sel = 'selected';
 		
 		if (value !== previous) {
 			
@@ -87,15 +124,64 @@ function autocomplete(input) {
 				
 				// extract last word of input
 				pos = value.lastIndexOf(' '),
-				word = value.substr(pos < 0 ? 0 : pos),
-				
-				// get suggestions
-				suggestions = suggest(word);
+				word = value.substr(pos < 0 ? 0 : pos).toLowerCase();
 			
-			// update choices
-			if (suggestions.length) {
-				update(suggestions, word.toLowerCase());
+			if (word.length) {
+				
+				var
+					// get suggestions
+					suggestions = suggest(word);
+				
+				// update choices
+				if (suggestions && suggestions.length) {
+					update(suggestions, word);
+				} else {
+					hide();
+				}
+				
+			} else {
+				
+				hide();
+				
 			}
+			
+			
+		} else if (which === upkey || which === downkey) {
+			
+			
+			if ($selected) {
+				
+				if (which === upkey) {
+					
+					var $prev = $selected.prev();
+					if ($prev.length) {
+						
+						$selected.removeClass(sel);
+						$selected = $prev.addClass(sel);
+						
+					}
+					
+				} else {
+					
+					var $next = $selected.next();
+					if ($next.length) {
+						
+						$selected.removeClass(sel);
+						$selected = $next.addClass(sel);
+						
+					}
+					
+				}
+				
+			} else {
+				
+				$selected = $ul.find('li').eq(0).addClass(sel);
+				
+			}
+			
+		} else if (which === enterkey) {
+			
+			select();
 			
 		}
 		
@@ -118,6 +204,7 @@ function autocomplete(input) {
 	 * hide the autocomplete suggestions.
 	 */
 	function hide() {
+		//$selected = null;
 		$dd.hide();
 	}
 	
@@ -128,7 +215,7 @@ function autocomplete(input) {
 		
 		// hide autocomplete suggestions when form is submitted
 		.parent('form')
-			.submit(hide);
+			.submit(select);
 	
 }
 
