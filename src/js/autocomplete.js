@@ -15,7 +15,7 @@ function suggest(query) {
 		query + 'a',
 		query + 'b',
 		query + 'c',
-		query + 'd',
+		query + 'd'
 	];
 	
 }
