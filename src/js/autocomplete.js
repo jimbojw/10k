@@ -111,7 +111,7 @@ function autocomplete(input) {
 			left: offset.left,
 			width: input.offsetWidth
 		});
-		$dd.show()
+		$dd.show();
 	}
 	
 	/**
