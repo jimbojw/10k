@@ -1,0 +1,14 @@
+/**
+ * autocomplete.css - styles relating to the autocomplete implementation.
+ */
+
+/* container div */
+.auto {
+	position: absolute;
+	height: 200px;
+	background: #fff;
+	padding: 0;
+	margin: 0;
+	border: none;
+}
+
