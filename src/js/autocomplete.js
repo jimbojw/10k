@@ -68,9 +68,9 @@ function autocomplete(input) {
 				pos = value.lastIndexOf(' ') + 1;
 			
 			$input.get(0).value = previous = value.substr(0, pos) + word;
-			
-			hide();
 		}
+		
+		hide();
 		
 	}
 	
@@ -145,7 +145,6 @@ function autocomplete(input) {
 			
 		} else if (which === upkey || which === downkey) {
 			
-			
 			if ($selected) {
 				
 				if (which === upkey) {
@@ -175,6 +174,8 @@ function autocomplete(input) {
 				$selected = $ul.find('li').eq(0).addClass(selectedClass);
 				
 			}
+			
+			show();
 			
 		} else if (which === enterkey) {
 			
