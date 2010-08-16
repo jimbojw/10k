@@ -29,16 +29,11 @@ function autocomplete(input) {
 	
 	var
 		
-		// grab input and position
 		$input = $(input),
-		offset = $input.offset(),
 		
 		// create drop-down structure
 		$dd = $('<div class="auto"><ul></ul></div>')
 			.css({
-				top: offset.top + input.offsetHeight,
-				left: offset.left,
-				width: input.offsetWidth,
 				display: 'none'
 			})
 			.appendTo(document.body),
@@ -72,7 +67,7 @@ function autocomplete(input) {
 			
 		}
 		
-		$dd.show();
+		show();
 		
 	}
 	
@@ -107,6 +102,19 @@ function autocomplete(input) {
 	}
 	
 	/**
+	 * show the autocomplete suggestion box.
+	 */
+	function show() {
+		var offset = $input.offset();
+		$dd.css({
+			top: offset.top + input.offsetHeight,
+			left: offset.left,
+			width: input.offsetWidth
+		});
+		$dd.show()
+	}
+	
+	/**
 	 * hide the autocomplete suggestions.
 	 */
 	function hide() {
@@ -116,8 +124,7 @@ function autocomplete(input) {
 	$input
 		
 		// wire up modification handler
-		.change(modified)
-		.keyup(modified)
+		.bind("change keyup", modified)
 		
 		// hide autocomplete suggestions when form is submitted
 		.parent('form')
