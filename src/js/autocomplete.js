@@ -106,10 +106,22 @@ function autocomplete(input) {
 		
 	}
 	
-	// wire up modification handler
+	/**
+	 * hide the autocomplete suggestions.
+	 */
+	function hide() {
+		$dd.hide();
+	}
+	
 	$input
+		
+		// wire up modification handler
 		.change(modified)
-		.keyup(modified);
+		.keyup(modified)
+		
+		// hide autocomplete suggestions when form is submitted
+		.parent('form')
+			.submit(hide);
 	
 }
 
