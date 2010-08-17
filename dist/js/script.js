@@ -352,6 +352,7 @@ function extract(text) {
 function update(id, type, text) {
 	
 	// short-circuit of nothing of value has been sent
+	text = '' + text;
 	if (!text || !(/[a-z]/i).test(text)) {
 		return;
 	}
@@ -473,20 +474,22 @@ var
  */
 function bookmarklet(window,document,origin) {
 	
-	// setup the 10kse namespace
-	// NOTE: This does not duplicate the code in intro.js since 
-	//       the bookmarklet will be running in a different page.
+	/**
+	 * setup the 10kse namespace
+	 * NOTE: This does not duplicate the code in intro.js since 
+	 *       the bookmarklet will be running in a different page.
+	 */
 	var tenk = window['10kse'];
 	if (!tenk) {
 		tenk = window['10kse'] = {};
 	}
 	
-	// if script was previously retrieved, simple rexecute it
+	/* if script was previously retrieved, simple rexecute it */
 	if (tenk.scanner) {
 		return tenk.scanner();
 	}
 	
-	// listen for script posted from origin and eval it
+	/* listen for script posted from origin and eval it */
 	window.addEventListener("message", function (event) {
 		if (origin.substr(0, event.origin.length)===event.origin) {
 			tenk.scanner = new Function(event.data);
@@ -494,7 +497,7 @@ function bookmarklet(window,document,origin) {
 		}
 	}, false);
 	
-	// open iframe to origin and style it
+	/* open iframe to origin and style it */
 	var
 		iframe = tenk.iframe = document.createElement('iframe'),
 		style = iframe.style;
@@ -504,8 +507,10 @@ function bookmarklet(window,document,origin) {
 	style.border = "none";
 	style.position = "absolute";
 	
-	// prepare listeners for iframe state changes, and
-	// when iframe is ready, use postMessage() to ask for script
+	/**
+	 * prepare listeners for iframe state changes, and
+	 * when iframe is ready, use postMessage() to ask for script
+	 */
 	var done = false;
 	iframe.onload = iframe.onreadystatechange = function() {
 		if (!done && (!this.readyState || this.readyState === "loaded" || this.readyState === "complete")) {
@@ -515,7 +520,7 @@ function bookmarklet(window,document,origin) {
 		}
 	};
 	
-	// append iframe
+	/* append iframe */
 	document.body.appendChild(iframe);
 }
 
@@ -530,9 +535,17 @@ if (!key) {
 }
 origin = JSON.stringify(origin.replace(/#.*|$/, '#' + key));
 
+var href = (
+	'javascript:(' + 
+		(bookmarklet + '')
+			.replace(/\/\*[\s\S]*?\*\//g, '')
+			.replace(/\s+/g, ' ') +
+	')(window,document,' + origin + ')'
+);
+
 // attach bookmarklet to "add" link
 $('#add')
-	.attr('href', ('javascript:(' + bookmarklet + ')(window,document,' + origin + ')').replace(/\s+/g, ' '))
+	.attr('href', href)
 	.click(function(e){
 		e.preventDefault();
 		alert(
@@ -959,8 +972,6 @@ var
  * retrieves a list of known words.
  */
 function allwords() {
-	
-	// TODO: keep a localStorage var filled with all words
 	
 	var count = storage.length;
 	
