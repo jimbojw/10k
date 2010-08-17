@@ -100,7 +100,7 @@ function suggest(query) {
 		end--;
 	}
 	
-	return words.slice(start, end);
+	return words.slice(start, end + 1);
 	
 }
 
