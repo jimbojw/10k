@@ -523,10 +523,10 @@ function bookmarklet(window,document,origin) {
 // create composit origin url for anchor tag
 var
 	origin = document.location.href,
-	key = get('key');
+	key = get('K');
 if (!key) {
 	key = Math.random();
-	set('key',key);
+	set('K',key);
 }
 origin = JSON.stringify(origin.replace(/#.*|$/, '#' + key));
 
