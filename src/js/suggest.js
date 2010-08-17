@@ -95,7 +95,7 @@ function suggest(query) {
 	}
 	
 	// find the last word, up to 20
-	var end = start + 21 > len ? len - 1 : start + 20;
+	var end = start + 16 > len ? len - 1 : start + 15;
 	while (words[end].indexOf(query) !== 0) {
 		end--;
 	}
