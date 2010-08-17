@@ -32,7 +32,7 @@ HTML_CONTENT = ${DIST_DIR}/content.html
 
 IMAGE_PPM = ${DIST_DIR}/image/raw.ppm
 IMAGE_PNG = ${DIST_DIR}/image/uncrushed.png
-CRUSH_PNG = ${DIST_DIR}/image/data.png
+DATA_PNG = ${DIST_DIR}/data.png
 
 INDEX_FILE = ${SRC_DIR}/index.html
 INDEX_OUT = ${DIST_DIR}/index.html
@@ -118,11 +118,11 @@ ${IMAGE_PNG}: ${IMAGE_PPM}
 	@@echo "Building" ${IMAGE_PNG}
 	@@convert ${IMAGE_PPM} ${IMAGE_PNG}
 
-pngcrush: ${CRUSH_PNG}
+pngcrush: ${DATA_PNG}
 
-${CRUSH_PNG}: ${IMAGE_PNG}
-	@@echo "Building" ${CRUSH_PNG}
-	@@pngcrush -q ${IMAGE_PNG} ${CRUSH_PNG}
+${DATA_PNG}: ${IMAGE_PNG}
+	@@echo "Building" ${DATA_PNG}
+	@@pngcrush -q ${IMAGE_PNG} ${DATA_PNG}
 
 htmlreplace: ${DIST_DIR} ${INDEX_OUT}
 
