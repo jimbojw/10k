@@ -18,8 +18,6 @@ var
  */
 function allwords() {
 	
-	// TODO: keep a localStorage var filled with all words
-	
 	var count = storage.length;
 	
 	if (count === keycount) {
