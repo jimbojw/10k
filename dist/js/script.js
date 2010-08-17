@@ -1189,12 +1189,19 @@ function autocomplete(input) {
 		previous = '',
 		
 		// currently selected option
-		$selected = null;
+		$selected = null,
+		
+		// timout for delayed reaction
+		timeout,
+		clear = window.clearTimeout;
 	
 	/**
 	 * action to take when the user selects an option.
 	 */
 	function select() {
+		
+		clear(timeout);
+		timeout = null;
 		
 		if ($selected) {
 			
@@ -1261,16 +1268,24 @@ function autocomplete(input) {
 			
 			if (word.length) {
 				
-				var
-					// get suggestions
-					suggestions = suggest(word);
-				
-				// update choices
-				if (suggestions && suggestions.length) {
-					update(suggestions, word);
-				} else {
-					hide();
+				if (timeout) {
+					clear(timeout);
 				}
+				
+				timeout = window.setTimeout(function(){
+					
+					clear(timeout);
+					timeout = null;
+					
+					// get suggestions and update choices
+					var suggestions = suggest(word);
+					if (suggestions && suggestions.length) {
+						update(suggestions, word);
+					} else {
+						hide();
+					}
+					
+				}, 400);
 				
 			} else {
 				
