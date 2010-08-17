@@ -943,7 +943,50 @@ tenk.highlight = highlight;
 /**
  * suggest.js
  */
-(function(tenk,undefined){
+(function(window,tenk,undefined){
+
+var
+	
+	// storage api
+	storage = window.localStorage,
+	get = tenk.get,
+	
+	// cache of words
+	wordcache,
+	keycount;
+
+/**
+ * retrieves a list of known words.
+ */
+function allwords() {
+	
+	// TODO: keep a localStorage var filled with all words
+	
+	var count = storage.length;
+	
+	if (count === keycount) {
+		return wordcache;
+	}
+	
+	keycount = count;
+	wordcache = [];
+	count = 0;
+	
+	for (var i=0; i<keycount; i++) {
+		
+		var key = storage.key(i);
+		
+		if (key.indexOf('W-') === 0) {
+			wordcache[count++] = key.substr(2);
+		}
+		
+	}
+	
+	wordcache.sort();
+	
+	return wordcache;
+	
+}
 
 /**
  * get array of suggestions based on input string.
@@ -951,27 +994,62 @@ tenk.highlight = highlight;
  */
 function suggest(query) {
 	
-	query = query.replace(/^\s+|\s$/g, '');
+	// trim query
+	query = query.replace(/^\s+|\s$/g, '').toLowerCase();
 	
-	if (!query) {
+	// short-circuit if query is empty or if there is less than one element in storage
+	if (!query || !storage.length) {
 		return [];
 	}
 	
-	// TODO: implement me!!
-	return [
-		query,
-		query + 'a',
-		query + 'b',
-		query + 'c',
-		query + 'd'
-	];
+	var
+		
+		words = allwords(),
+		len = words.length,
+		
+		// low and high bounds for binary search
+		low = 0,
+		high = len - 1,
+		mid;
+	
+	// find first word that starts with query
+	while (high - low > 1) {
+		
+		mid = low + ((high - low) >> 1);
+		
+		if (words[mid] <= query) {
+			low = mid;
+		} else {
+			high = mid;
+		}
+		
+	}
+	
+	// first matching word will either be low or high
+	var start;
+	if (words[low].indexOf(query) === 0) {
+		start = low;
+	} else if (words[high].indexOf(query) === 0) {
+		start = high;
+	} else {
+		// short-circit if there are no matches
+		return [];
+	}
+	
+	// find the last word, up to 20
+	var end = start + 21 > len ? len - 1 : start + 20;
+	while (words[end].indexOf(query) !== 0) {
+		end--;
+	}
+	
+	return words.slice(start, end);
 	
 }
 
 // exports
-tenk.suggest = suggest;
+tenk.suggest = suggest;	// short circuit if there are no matches
 
-})(window['10kse']);
+})(window,window['10kse']);
 /**
  * autocomplete.js - stripped-down implementation of autocomplete.
  */
@@ -1042,9 +1120,9 @@ function autocomplete(input) {
 				pos = value.lastIndexOf(' ') + 1;
 			
 			$input.get(0).value = previous = value.substr(0, pos) + word;
-			
-			hide();
 		}
+		
+		hide();
 		
 	}
 	
@@ -1119,7 +1197,6 @@ function autocomplete(input) {
 			
 		} else if (which === upkey || which === downkey) {
 			
-			
 			if ($selected) {
 				
 				if (which === upkey) {
@@ -1149,6 +1226,8 @@ function autocomplete(input) {
 				$selected = $ul.find('li').eq(0).addClass(selectedClass);
 				
 			}
+			
+			show();
 			
 		} else if (which === enterkey) {
 			
