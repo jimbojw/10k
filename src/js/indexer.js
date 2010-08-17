@@ -77,6 +77,7 @@ function extract(text) {
 function update(id, type, text) {
 	
 	// short-circuit of nothing of value has been sent
+	text = '' + text;
 	if (!text || !(/[a-z]/i).test(text)) {
 		return;
 	}
