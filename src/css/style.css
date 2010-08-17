@@ -5,13 +5,15 @@ body {
 	font-family: arial;
 	width: 600px;
 	margin: 0 auto;
-	background: #cceeff;
+	background: #cef;
 }
 
 h1 {
-	background: #003366;
+	background: #036;
 	color: white;
-	padding: 1em;
+	padding: 1em 0;
+	font-size: 2.5em;
+	text-align: center;
 }
 
 dd {
