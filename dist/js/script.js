@@ -1037,7 +1037,7 @@ function suggest(query) {
 	}
 	
 	// find the last word, up to 20
-	var end = start + 21 > len ? len - 1 : start + 20;
+	var end = start + 16 > len ? len - 1 : start + 15;
 	while (words[end].indexOf(query) !== 0) {
 		end--;
 	}
@@ -1241,13 +1241,15 @@ function autocomplete(input) {
 	 * show the autocomplete suggestion box.
 	 */
 	function show() {
-		var offset = $input.offset();
-		$dd.css({
-			top: offset.top + input.offsetHeight,
-			left: offset.left,
-			width: input.offsetWidth
-		});
-		$dd.show();
+		if ($ul.find('li').length) {
+			var offset = $input.offset();
+			$dd.css({
+				top: offset.top + input.offsetHeight,
+				left: offset.left,
+				width: input.offsetWidth
+			});
+			$dd.show();
+		}
 	}
 	
 	/**
