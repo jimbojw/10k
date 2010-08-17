@@ -189,13 +189,15 @@ function autocomplete(input) {
 	 * show the autocomplete suggestion box.
 	 */
 	function show() {
-		var offset = $input.offset();
-		$dd.css({
-			top: offset.top + input.offsetHeight,
-			left: offset.left,
-			width: input.offsetWidth
-		});
-		$dd.show();
+		if ($ul.find('li').length) {
+			var offset = $input.offset();
+			$dd.css({
+				top: offset.top + input.offsetHeight,
+				left: offset.left,
+				width: input.offsetWidth
+			});
+			$dd.show();
+		}
 	}
 	
 	/**
