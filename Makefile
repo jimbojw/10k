@@ -28,6 +28,10 @@ CSS_FILES = \
 CSS_OUT = ${DIST_DIR}/css/style.css
 CSS_MIN = ${DIST_DIR}/css/style.min.css
 
+IMAGE_PPM = ${DIST_DIR}/image/raw.ppm
+IMAGE_PNG = ${DIST_DIR}/image/uncrushed.png
+CRUSH_PNG = ${DIST_DIR}/image/data.png
+
 INDEX_FILE = ${SRC_DIR}/index.html
 INDEX_OUT = ${DIST_DIR}/index.html
 
@@ -35,7 +39,7 @@ RHINO = java -jar ${BUILD_DIR}/js.jar
 MINJAR = java -jar ${BUILD_DIR}/google-compiler-20100514.jar
 YUIJAR = java -jar ${BUILD_DIR}/yuicompressor-2.4.2.jar
 
-all: jsbuild cssbuild htmlbuild
+all: jsbuild cssbuild imagebuild htmlbuild
 	@@echo "10k build complete."
 
 jsbuild: jscat jslint jsmin
@@ -44,6 +48,9 @@ jsbuild: jscat jslint jsmin
 cssbuild: csscat cssmin
 	@@echo "css build complete."
 
+imagebuild: ppmbuild pngconvert pngcrush
+	@@echo "image build complete."
+
 htmlbuild: htmlreplace
 	@@echo "html build complete."
 
@@ -51,6 +58,7 @@ ${DIST_DIR}:
 	@@mkdir -p ${DIST_DIR}
 	@@mkdir -p ${DIST_DIR}/js
 	@@mkdir -p ${DIST_DIR}/css
+	@@mkdir -p ${DIST_DIR}/image
 
 init:
 	@@echo "Grabbing external dependencies..."
@@ -84,6 +92,28 @@ cssmin: ${CSS_MIN}
 ${CSS_MIN}: ${CSS_OUT}
 	@@echo "Building" ${CSS_MIN}
 	@@${YUIJAR} --type css ${CSS_OUT} > ${CSS_MIN}
+
+ppmbuild: ${DIST_DIR} ${IMAGE_PPM}
+
+${IMAGE_PPM}: ${DIST_DIR} ${INDEX_FILE}
+	@@echo "Building" ${IMAGE_PPM}
+	@@cat ${INDEX_FILE} | \
+		${RHINO} build/makeppm.js \
+			${CSS_MIN} \
+			${JS_MIN} >\
+		${IMAGE_PPM}
+
+pngconvert: ${IMAGE_PNG}
+
+${IMAGE_PNG}: ${IMAGE_PPM}
+	@@echo "Building" ${IMAGE_PNG}
+	@@convert ${IMAGE_PPM} ${IMAGE_PNG}
+
+pngcrush: ${CRUSH_PNG}
+
+${CRUSH_PNG}: ${IMAGE_PNG}
+	@@echo "Building" ${CRUSH_PNG}
+	@@pngcrush -q ${IMAGE_PNG} ${CRUSH_PNG}
 
 htmlreplace: ${DIST_DIR} ${INDEX_OUT}
 
