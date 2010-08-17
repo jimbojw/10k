@@ -1,5 +1,5 @@
 /**
- * makepgm.js - encodes any number of text files into a PPM (P3) image.
+ * makeppm.js - encodes any number of text files into a PPM (P3) image.
  */
 (function(){
 
