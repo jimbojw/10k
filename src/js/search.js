@@ -67,6 +67,7 @@ function search(e) {
 		// references to library functions
 		wordcount = tenk.wordcount,
 		normalize = tenk.normalize,
+		topdistance = tenk.topdistance,
 		
 		// scoring
 		rankings = [
@@ -78,7 +79,13 @@ function search(e) {
 			[1.0, normalize(wordcount(ids, terms, "s", recordcache))],
 			[1.0, normalize(wordcount(ids, terms, "t", recordcache))],
 			[1.0, normalize(wordcount(ids, terms, "p", recordcache))],
-			[1.0, normalize(wordcount(ids, terms, "c", recordcache))]
+			[1.0, normalize(wordcount(ids, terms, "c", recordcache))],
+			
+			// count number of times terms appear in the documents
+			[1.0, normalize(topdistance(ids, terms, "s", recordcache), -1)],
+			[1.0, normalize(topdistance(ids, terms, "t", recordcache), -1)],
+			[1.0, normalize(topdistance(ids, terms, "p", recordcache), -1)],
+			[1.0, normalize(topdistance(ids, terms, "c", recordcache), -1)]
 			
 		],
 		

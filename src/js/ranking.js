@@ -121,9 +121,80 @@ function wordcount(ids, terms, type, recordcache) {
 	
 }
 
+/**
+ * how close is the closest word to the top of the content
+ * @param {object} ids Hash in which keys are document ids (values unimportant).
+ * @param {array} terms List of search terms provided.
+ * @param {string} type The type of content to count ('s'election, 't'itle, 'p'riority, or 'c'ontent).
+ * @param {object} recordcache Hash mapping words to their localStorage values.
+ * @return {object} Hash of id/score pairs.
+ */
+function topdistance(ids, terms, type, recordcache) {
+	
+	if (!recordcache) {
+		recordcache = {};
+	}
+	
+	var
+		scores = {},
+		term,
+		record,
+		id,
+		entry,
+		positions,
+		low;
+	
+	for (id in ids) {
+		
+		low = null;
+		
+		for (var i=0, l=terms.length; i<l; i++) {
+			
+			term = terms[i];
+			if (term.length > 2 && !stop[term]) {
+				
+				record = recordcache[term];
+				
+				if (record === undefined) {
+					record = recordcache[term] = get("W-" + term);
+				}
+				
+				if (record) {
+					
+					entry = record[id];
+					if (entry) {
+						
+						positions = entry[type];
+						if (positions) {
+							
+							if (low === null || positions[0] < low) {
+								low = positions[0];
+							}
+							
+						}
+						
+					}
+					
+				}
+				
+			}
+			
+		}
+		
+		if (low !== null) {
+			scores[id] = low;
+		}
+		
+	}
+	
+	return scores;
+	
+}
+
 // exports
 tenk.wordcount = wordcount;
 tenk.normalize = normalize;
+tenk.topdistance = topdistance;
 
 })(window['10kse']);
 
