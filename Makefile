@@ -133,7 +133,7 @@ ${INDEX_OUT}: init ${INDEX_FILE}
 			style ${CSS_MIN} \
 			script ${JS_MIN} >\
 		${INDEX_OUT}
-	@@echo "Total size:" `du -bh ${INDEX_OUT} | sed -e 's/\s.*//'`
+	@@echo "Total size:" `du -b ${INDEX_OUT} | sed -e 's/\s.*//'`
 
 clean:
 	@@echo "Removing Distribution directory:" ${DIST_DIR}
