@@ -28,6 +28,8 @@ CSS_FILES = \
 CSS_OUT = ${DIST_DIR}/css/style.css
 CSS_MIN = ${DIST_DIR}/css/style.min.css
 
+HTML_CONTENT = ${DIST_DIR}/content.html
+
 IMAGE_PPM = ${DIST_DIR}/image/raw.ppm
 IMAGE_PNG = ${DIST_DIR}/image/uncrushed.png
 CRUSH_PNG = ${DIST_DIR}/image/data.png
@@ -48,7 +50,7 @@ jsbuild: jscat jslint jsmin
 cssbuild: csscat cssmin
 	@@echo "css build complete."
 
-imagebuild: ppmbuild pngconvert pngcrush
+imagebuild: htmlcontent ppmbuild pngconvert pngcrush
 	@@echo "image build complete."
 
 htmlbuild: htmlreplace
@@ -93,13 +95,20 @@ ${CSS_MIN}: ${CSS_OUT}
 	@@echo "Building" ${CSS_MIN}
 	@@${YUIJAR} --type css ${CSS_OUT} > ${CSS_MIN}
 
+htmlcontent: ${DIST_DIR} ${HTML_CONTENT}
+
+${HTML_CONTENT}: init ${INDEX_FILE}
+	@@echo "Building" ${HTML_CONTENT}
+	@@cat ${INDEX_FILE} | ${RHINO} build/extract.js html > ${HTML_CONTENT}
+
 ppmbuild: ${DIST_DIR} ${IMAGE_PPM}
 
-${IMAGE_PPM}: ${DIST_DIR} ${INDEX_FILE}
+${IMAGE_PPM}: ${HTML_CONTENT}
 	@@echo "Building" ${IMAGE_PPM}
 	@@cat ${INDEX_FILE} | \
 		${RHINO} build/makeppm.js \
 			${CSS_MIN} \
+			${HTML_CONTENT} \
 			${JS_MIN} >\
 		${IMAGE_PPM}
 
