@@ -2,10 +2,10 @@
  * style.css
  */
 body {
-	font-family: arial;
+	font-family: arial, sans-serif;
 	width: 600px;
 	margin: 0 auto;
-	background: #cef;
+	background: #eee;
 }
 
 h1 {
@@ -14,34 +14,56 @@ h1 {
 	padding: 1em 0;
 	font-size: 2.5em;
 	text-align: center;
+	background-image: -moz-linear-gradient(
+		center bottom,
+		#1b4080 32%,
+		#486bb3 72%
+	);
+	background-image: -webkit-gradient(
+		linear,
+		left bottom,
+		left top,
+		color-stop(0.32, #1b4080),
+		color-stop(0.72, #486bb3)
+	);
+	-moz-border-radius: 8px;
+	border-radius: 8px;
+	text-shadow: #333 1px 1px 1px;
 }
 
-dd {
-	margin-left: 0;
-	margin-bottom: 1.5em;
-}
 dt {
 	font-size: 1.1em;
+	margin-bottom: 0;
+}
+dd {
+	margin-left: 0;
+	margin-bottom: 2.5em;
+}
+dd p {
+	margin: 1em 0;
 }
 
 a, a:visited {
-	color: blue;
+	color: #06c;
 }
 
 input {
 	width: 100%;
+border: 1px solid #aaa;
 }
 
 body > div {
 	background: white;
-	border: 1px solid #ccc;
+	border: 1px solid #aaa;
 	margin-bottom: 1em;
 	padding: 0 1em 1em;
+	-moz-border-radius: 8px;
+	border-radius: 8px;
 }
 
 ul {
 	list-style-type: square;
-	color: #09f;
+	color: #06c;
 }
 ul li {
 	margin-bottom: 0.5em;
