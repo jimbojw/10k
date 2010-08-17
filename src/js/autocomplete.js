@@ -7,8 +7,10 @@ var
 	
 	// key codes
 	upkey = 38,
+	rightkey = 39,
 	downkey = 40,
 	enterkey = 13,
+	esckey = 27,
 	
 	// short-hand for common strings (aids compressibity)
 	selectedClass = 'selected',
@@ -177,9 +179,13 @@ function autocomplete(input) {
 			
 			show();
 			
-		} else if (which === enterkey) {
+		} else if (which === enterkey || which === rightkey) {
 			
 			select();
+			
+		} else if (which === esckey) {
+			
+			hide();
 			
 		}
 		
