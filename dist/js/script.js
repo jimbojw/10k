@@ -1211,6 +1211,10 @@ function autocomplete(input) {
 				pos = value.lastIndexOf(' ') + 1;
 			
 			$input.get(0).value = previous = value.substr(0, pos) + word;
+			
+			$selected.removeClass(selectedClass);
+			$selected = null;
+			
 		}
 		
 		hide();
@@ -1285,7 +1289,7 @@ function autocomplete(input) {
 						hide();
 					}
 					
-				}, 400);
+				}, 100);
 				
 			} else {
 				
