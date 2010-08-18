@@ -155,7 +155,7 @@ function autocomplete(input) {
 						hide();
 					}
 					
-				}, 400);
+				}, 100);
 				
 			} else {
 				
