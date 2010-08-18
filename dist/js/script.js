@@ -1435,7 +1435,7 @@ var
 	
 	// cached jquery results
 	$results = $('.results dl'),
-	$input = $('.search input');
+	$input = $('.search input').eq(0);
 
 /**
  * search form behavior
@@ -1447,7 +1447,7 @@ function search(e) {
 	var
 		
 		// retrieve search query
-		query = $input.val() || '',
+		query = ($input.val() || '').replace(/^\s+|\s+$/g, ''),
 		
 		// extract terms from supplied search input string
 		terms = query.toLowerCase().split(/[^a-z0-9_]/),
@@ -1464,6 +1464,11 @@ function search(e) {
 		
 		// record cache
 		recordcache = {};
+	
+	// short-circuit if no terms were specified
+	if (!query) {
+		return;
+	}
 	
 	// collect matching document ids
 	for (i=0, l=terms.length; i<l; i++) {
@@ -1556,16 +1561,6 @@ function search(e) {
 	ranks.sort(tenk.asc);
 	ranks.reverse();
 	
-	// Implement these raw score algorithms (input term and document, output score number):
-	//   * count of terms present in text (simple hit count)
-	//   * word distance from beginning of document to first hit 
-	//   * distance between term words in matching document (only for multi-term searches)
-	//  for each of these categories:
-	//   * title
-	//   * selection
-	//   * priority
-	//   * content
-	
 	var
 		
 		// highlight function
@@ -1575,44 +1570,50 @@ function search(e) {
 		last = null;
 	
 	// display search results in rank order, highlighted accordingly
-	$results.empty();
-	for (i=0, l=ranks.length; i<l; i++) {
+	$results.slideUp('slow', function(){
 		
-		score = ranks[i];
-		if (score !== last) {
+		$results.empty();
+		
+		for (i=0, l=ranks.length; i<l; i++) {
 			
-			last = score;
-			entry = inverse[score];
+			score = ranks[i];
+			if (score !== last) {
+				
+				last = score;
+				entry = inverse[score];
+				
+				for (var j=0, m=entry.length; j<m; j++) {
+					
+					id = entry[j];
+					
+					var
+						url = get("ID-" + id),
+						doc = get("URL-" + url),
+						text = doc.text;
+					
+					$results.append(
+						$('<dt><a></a></dt>')
+							.find('a')
+								.attr('href', url)
+								.attr('title', doc.title)
+								.html(highlight(doc.title, terms, false))
+							.end(),
+						$('<dd><p></p></dd>')
+							.find('p')
+								.html(highlight(text, terms))
+							.end()
+							.append('<p><strong>Score: ' + (totals[id] + '').substr(0,4) + '</strong></p>')
+					);
+				
+				}
 			
-			for (var j=0, m=entry.length; j<m; j++) {
-				
-				id = entry[j];
-				
-				var
-					url = get("ID-" + id),
-					doc = get("URL-" + url),
-					text = doc.text;
-				
-				$results.append(
-					$('<dt><a></a></dt>')
-						.find('a')
-							.attr('href', url)
-							.attr('title', doc.title)
-							.html(highlight(doc.title, terms, false))
-						.end(),
-					$('<dd><p></p></dd>')
-						.find('p')
-							.html(highlight(text, terms))
-						.end()
-						.append('<p><strong>Score: ' + (totals[id] + '').substr(0,4) + '</strong></p>')
-				);
-				
 			}
-			
+		
 		}
 		
-	}
-	
+		$results.slideDown('slow');
+		
+	});
 }
 
 // attach search action to form submission
