@@ -49,10 +49,10 @@ a, a:visited {
 
 input {
 	width: 100%;
-border: 1px solid #aaa;
+	border: 1px solid #aaa;
 }
 
-body > div {
+.container > div {
 	background: white;
 	border: 1px solid #aaa;
 	margin-bottom: 1em;
@@ -65,7 +65,33 @@ ul {
 	list-style-type: square;
 	color: #06c;
 }
-ul li {
+li {
 	margin-bottom: 0.5em;
 }
 
+#add {
+	display: block;
+	margin: 1em auto;
+	width: 5em;
+	background: #f30;
+	color: white;
+	padding: 0.5em;
+	font-size: 2.5em;
+	text-align: center;
+	background-image: -moz-linear-gradient(
+		center bottom,
+		#c92200 32%,
+		#ff3300 72%
+	);
+	background-image: -webkit-gradient(
+		linear,
+		left bottom,
+		left top,
+		color-stop(0.32, #c92200),
+		color-stop(0.72, #ff3300)
+	);
+	-moz-border-radius: 8px;
+	border-radius: 8px;
+	text-shadow: #333 1px 1px 1px;
+	text-decoration: none;
+}
