@@ -2,7 +2,7 @@
  * style.css
  */
 body {
-	font-family: arial, sans-serif;
+	font-family: 'Helvetica Neue', Arial, 'Liberation Sans', FreeSans, sans-serif;
 	width: 600px;
 	margin: 0 auto;
 	background: #eee;
