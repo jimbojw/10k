@@ -156,44 +156,50 @@ function search(e) {
 		last = null;
 	
 	// display search results in rank order, highlighted accordingly
-	$results.empty();
-	for (i=0, l=ranks.length; i<l; i++) {
+	$results.slideUp('slow', function(){
 		
-		score = ranks[i];
-		if (score !== last) {
+		$results.empty();
+		
+		for (i=0, l=ranks.length; i<l; i++) {
 			
-			last = score;
-			entry = inverse[score];
+			score = ranks[i];
+			if (score !== last) {
+				
+				last = score;
+				entry = inverse[score];
+				
+				for (var j=0, m=entry.length; j<m; j++) {
+					
+					id = entry[j];
+					
+					var
+						url = get("ID-" + id),
+						doc = get("URL-" + url),
+						text = doc.text;
+					
+					$results.append(
+						$('<dt><a></a></dt>')
+							.find('a')
+								.attr('href', url)
+								.attr('title', doc.title)
+								.html(highlight(doc.title, terms, false))
+							.end(),
+						$('<dd><p></p></dd>')
+							.find('p')
+								.html(highlight(text, terms))
+							.end()
+							.append('<p><strong>Score: ' + (totals[id] + '').substr(0,4) + '</strong></p>')
+					);
+				
+				}
 			
-			for (var j=0, m=entry.length; j<m; j++) {
-				
-				id = entry[j];
-				
-				var
-					url = get("ID-" + id),
-					doc = get("URL-" + url),
-					text = doc.text;
-				
-				$results.append(
-					$('<dt><a></a></dt>')
-						.find('a')
-							.attr('href', url)
-							.attr('title', doc.title)
-							.html(highlight(doc.title, terms, false))
-						.end(),
-					$('<dd><p></p></dd>')
-						.find('p')
-							.html(highlight(text, terms))
-						.end()
-						.append('<p><strong>Score: ' + (totals[id] + '').substr(0,4) + '</strong></p>')
-				);
-				
 			}
-			
+		
 		}
 		
-	}
-	
+		$results.slideDown('slow');
+		
+	});
 }
 
 // attach search action to form submission
