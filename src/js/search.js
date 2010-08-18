@@ -16,7 +16,7 @@ var
 	
 	// cached jquery results
 	$results = $('.results dl'),
-	$input = $('.search input');
+	$input = $('.search input').eq(0);
 
 /**
  * search form behavior
@@ -28,7 +28,7 @@ function search(e) {
 	var
 		
 		// retrieve search query
-		query = $input.val() || '',
+		query = ($input.val() || '').replace(/^\s+|\s+$/g, ''),
 		
 		// extract terms from supplied search input string
 		terms = query.toLowerCase().split(/[^a-z0-9_]/),
@@ -45,6 +45,11 @@ function search(e) {
 		
 		// record cache
 		recordcache = {};
+	
+	// short-circuit if no terms were specified
+	if (!query) {
+		return;
+	}
 	
 	// collect matching document ids
 	for (i=0, l=terms.length; i<l; i++) {
@@ -136,16 +141,6 @@ function search(e) {
 	// sort matches by rank, descending
 	ranks.sort(tenk.asc);
 	ranks.reverse();
-	
-	// Implement these raw score algorithms (input term and document, output score number):
-	//   * count of terms present in text (simple hit count)
-	//   * word distance from beginning of document to first hit 
-	//   * distance between term words in matching document (only for multi-term searches)
-	//  for each of these categories:
-	//   * title
-	//   * selection
-	//   * priority
-	//   * content
 	
 	var
 		
