@@ -13,7 +13,10 @@ var
 	nonword = /[^0-9a-z_]+/i,
 	
 	// so-called "stop" words (uninteresting to search)
-	stop = tenk.stop;
+	stop = tenk.stop,
+	
+	// trie implementation
+	trie = tenk.trie;
 
 /**
  * extract meaningful words and their positions from input text (create an inverted index).
@@ -73,8 +76,9 @@ function extract(text) {
  * @param {int} id ID of the document being updated.
  * @param {string} type Type of text being considered (selection, priority, or full content).
  * @param {string} text Text to be indexed.
+ * @param {object} allwords Hash of all words (update will add to this hash).
  */
-function update(id, type, text) {
+function update(id, type, text, allwords) {
 	
 	// short-circuit of nothing of value has been sent
 	text = '' + text;
@@ -113,6 +117,8 @@ function update(id, type, text) {
 		// set record for word in store
 		set("W-" + word, record);
 		
+		// add word to allwords hash
+		allwords[word] = 1;
 	}
 	
 }
@@ -166,11 +172,26 @@ function indexer(data) {
 		
 	}
 	
+	// keep track of all words seen during this update
+	var allwords = {};
+	
 	// update indexes
-	update(id, "s", data.selection);
-	update(id, "t", data.title);
-	update(id, "p", data.priority);
-	update(id, "c", data.content);
+	update(id, "s", data.selection, allwords);
+	update(id, "t", data.title, allwords);
+	update(id, "p", data.priority, allwords);
+	update(id, "c", data.content, allwords);
+	
+	// add all words to trie for autocompletion
+	var
+		data = get("ALL") || {},
+		t = trie(data),
+		word;
+	
+	for (word in allwords) {
+		t.add(word);
+	}
+	
+	set("ALL", data);
 	
 }
 
