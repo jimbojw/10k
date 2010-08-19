@@ -9,40 +9,12 @@ var
 	storage = window.localStorage,
 	get = tenk.get,
 	
+	// trie implementation
+	trie = tenk.trie,
+	
 	// cache of words
 	wordcache,
 	keycount;
-
-/**
- * retrieves a list of known words.
- */
-function allwords() {
-	
-	var count = storage.length;
-	
-	if (count === keycount) {
-		return wordcache;
-	}
-	
-	keycount = count;
-	wordcache = [];
-	count = 0;
-	
-	for (var i=0; i<keycount; i++) {
-		
-		var key = storage.key(i);
-		
-		if (key.indexOf('W-') === 0) {
-			wordcache[count++] = key.substr(2);
-		}
-		
-	}
-	
-	wordcache.sort();
-	
-	return wordcache;
-	
-}
 
 /**
  * get array of suggestions based on input string.
@@ -60,45 +32,14 @@ function suggest(query) {
 	
 	var
 		
-		words = allwords(),
-		len = words.length,
+		// all words data (trie structure)
+		data = get("ALL"),
 		
-		// low and high bounds for binary search
-		low = 0,
-		high = len - 1,
-		mid;
+		// trie for data lookup
+		t = trie(data);
 	
-	// find first word that starts with query
-	while (high - low > 1) {
-		
-		mid = low + ((high - low) >> 1);
-		
-		if (words[mid] <= query) {
-			low = mid;
-		} else {
-			high = mid;
-		}
-		
-	}
-	
-	// first matching word will either be low or high
-	var start;
-	if (words[low].indexOf(query) === 0) {
-		start = low;
-	} else if (words[high].indexOf(query) === 0) {
-		start = high;
-	} else {
-		// short-circit if there are no matches
-		return [];
-	}
-	
-	// find the last word, up to 20
-	var end = start + 16 > len ? len - 1 : start + 15;
-	while (words[end].indexOf(query) !== 0) {
-		end--;
-	}
-	
-	return words.slice(start, end + 1);
+	// return first few trie matches
+	return t.match(query).slice(0,15);
 	
 }
 
