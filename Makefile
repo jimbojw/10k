@@ -8,6 +8,7 @@ DATE = `git log -1 | grep Date: | sed 's/[^:]*: *//'`
 
 JS_FILES = \
 	${SRC_DIR}/js/intro.js\
+	${SRC_DIR}/js/trie.js\
 	${SRC_DIR}/js/scanner.js\
 	${SRC_DIR}/js/indexer.js\
 	${SRC_DIR}/js/bookmarklet.js\
