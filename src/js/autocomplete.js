@@ -76,7 +76,7 @@ function autocomplete(input) {
 				value = $input.val(),
 				pos = value.lastIndexOf(' ') + 1;
 			
-			$input.get(0).value = previous = value.substr(0, pos) + word;
+			$input.val(previous = value.substr(0, pos) + word);
 			
 			$selected.removeClass(selectedClass);
 			$selected = null;
@@ -126,7 +126,49 @@ function autocomplete(input) {
 			value = $input.val(),
 			which = e.which;
 		
-		if (value !== previous) {
+		if (which === enterkey || which === rightkey) {
+			
+			select();
+			
+		} else if (which === esckey) {
+			
+			hide();
+			
+		} else if (which === upkey || which === downkey) {
+			
+			if ($selected) {
+				
+				if (which === upkey) {
+					
+					var $prev = $selected.prev();
+					if ($prev.length) {
+						
+						$selected.removeClass(selectedClass);
+						$selected = $prev.addClass(selectedClass);
+						
+					}
+					
+				} else {
+					
+					var $next = $selected.next();
+					if ($next.length) {
+						
+						$selected.removeClass(selectedClass);
+						$selected = $next.addClass(selectedClass);
+						
+					}
+					
+				}
+				
+			} else {
+				
+				$selected = $ul.find('li').eq(0).addClass(selectedClass);
+				
+			}
+			
+			show();
+			
+		} else if (value !== previous) {
 			
 			previous = value;
 			
@@ -163,51 +205,7 @@ function autocomplete(input) {
 				
 			}
 			
-			
-		} else if (which === upkey || which === downkey) {
-			
-			if ($selected) {
-				
-				if (which === upkey) {
-					
-					var $prev = $selected.prev();
-					if ($prev.length) {
-						
-						$selected.removeClass(selectedClass);
-						$selected = $prev.addClass(selectedClass);
-						
-					}
-					
-				} else {
-					
-					var $next = $selected.next();
-					if ($next.length) {
-						
-						$selected.removeClass(selectedClass);
-						$selected = $next.addClass(selectedClass);
-						
-					}
-					
-				}
-				
-			} else {
-				
-				$selected = $ul.find('li').eq(0).addClass(selectedClass);
-				
-			}
-			
-			show();
-			
-		} else if (which === enterkey || which === rightkey) {
-			
-			select();
-			
-		} else if (which === esckey) {
-			
-			hide();
-			
 		}
-		
 	}
 	
 	/**
