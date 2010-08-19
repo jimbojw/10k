@@ -21,9 +21,7 @@ var
 /**
  * search form behavior
  */
-function search(e) { 
-	
-	e.preventDefault();
+function search() { 
 	
 	var
 		
@@ -198,7 +196,10 @@ function search(e) {
 }
 
 // attach search action to form submission
-$('form').submit(search);
+$('form').submit(function(e){
+	e.preventDefault();
+	setTimeout(search, 100);
+});
 
 // focus on the search input
 $(function(){
