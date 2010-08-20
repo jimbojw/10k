@@ -56,6 +56,15 @@ function tabclick(e){
 // listen for tab clicks
 $('nav li').click(tabclick);
 
+// setup and content bound navigation links
+$('a.nav').click(function(e){
+	e.preventDefault();
+	var
+		url = this.href,
+		tab = url.substr(url.lastIndexOf('#') + 1);
+	showtab(tab);
+});
+
 // exports
 tenk.showtab = showtab;
 
