@@ -56,7 +56,10 @@ function autocomplete(input) {
 		previous = '',
 		
 		// currently selected option
-		$selected = null;
+		$selected = null,
+		
+		// have the arrow keys been pressed since the last select()?
+		arrowspressed;
 	
 	/**
 	 * action to take when the user selects an option.
@@ -74,6 +77,8 @@ function autocomplete(input) {
 			
 			$selected.removeClass(selectedClass);
 			$selected = null;
+			
+			arrowspressed = null;
 			
 		}
 		
@@ -124,7 +129,7 @@ function autocomplete(input) {
 			
 			select();
 			
-		} else if (which === space && $selected) {
+		} else if (which === space && $selected && arrowspressed) {
 			
 			$input.val($input.val().replace(/\s+$/,''));
 			select();
@@ -135,6 +140,8 @@ function autocomplete(input) {
 			hide();
 			
 		} else if (which === upkey || which === downkey) {
+			
+			arrowspressed = true;
 			
 			if ($selected) {
 				
