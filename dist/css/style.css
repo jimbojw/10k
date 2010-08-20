@@ -86,6 +86,7 @@ input[type=button] {
 	-moz-border-radius: 8px;
 	border-radius: 8px;
 	display: none;
+	min-height: 250px;
 }
 .pane.selected {
 	display: inherit;
@@ -150,6 +151,10 @@ li {
 	position: relative;
 	top: -30px;
 }
+.about p {
+	margin: 1em;
+}
+
 /**
  * menu.css - css for menu system (navigation)
  */
