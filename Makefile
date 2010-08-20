@@ -23,6 +23,12 @@ JS_FILES = \
 JS_OUT = ${DIST_DIR}/js/script.js
 JS_MIN = ${DIST_DIR}/js/script.min.js
 
+JS_CRUSH_FILES = \
+	${SRC_DIR}/js/uncrush.js
+
+JS_CRUSH_OUT = ${DIST_DIR}/js/uncrush.js
+JS_CRUSH_MIN = ${DIST_DIR}/js/uncrush.min.js
+
 CSS_FILES = \
 	${SRC_DIR}/css/style.css\
 	${SRC_DIR}/css/menu.css\
@@ -35,10 +41,13 @@ HTML_CONTENT = ${DIST_DIR}/content.html
 
 IMAGE_PPM = ${DIST_DIR}/image/raw.ppm
 IMAGE_PNG = ${DIST_DIR}/image/uncrushed.png
-DATA_PNG = ${DIST_DIR}/data.png
+DATA_PNG = ${DIST_DIR}/final/data.png
 
 INDEX_FILE = ${SRC_DIR}/index.html
-INDEX_OUT = ${DIST_DIR}/index.html
+INDEX_OUT = ${DIST_DIR}/compressed/index.html
+
+CRUSH_FILE = ${SRC_DIR}/crush.html
+CRUSH_OUT = ${SRC_DIR}/final/index.html
 
 RHINO = java -jar ${BUILD_DIR}/js.jar
 MINJAR = java -jar ${BUILD_DIR}/google-compiler-20100514.jar
@@ -64,6 +73,9 @@ ${DIST_DIR}:
 	@@mkdir -p ${DIST_DIR}/js
 	@@mkdir -p ${DIST_DIR}/css
 	@@mkdir -p ${DIST_DIR}/image
+	@@mkdir -p ${DIST_DIR}/html
+	@@mkdir -p ${DIST_DIR}/compressed
+	@@mkdir -p ${DIST_DIR}/final
 
 init:
 	@@echo "Grabbing external dependencies..."
@@ -126,6 +138,7 @@ pngcrush: ${DATA_PNG}
 ${DATA_PNG}: ${IMAGE_PNG}
 	@@echo "Building" ${DATA_PNG}
 	@@pngcrush -q ${IMAGE_PNG} ${DATA_PNG}
+	@@echo "Crushed png size:" `du -b ${DATA_PNG} | sed -e 's/\s.*//'`
 
 htmlreplace: ${DIST_DIR} ${INDEX_OUT}
 
@@ -136,8 +149,7 @@ ${INDEX_OUT}: init ${INDEX_FILE}
 			style ${CSS_MIN} \
 			script ${JS_MIN} >\
 		${INDEX_OUT}
-	@@echo "Total size:" `du -b ${INDEX_OUT} | sed -e 's/\s.*//'`
-	@@echo "Crushed png size:" `du -b ${DATA_PNG} | sed -e 's/\s.*//'`
+	@@echo "Compressed index size:" `du -b ${INDEX_OUT} | sed -e 's/\s.*//'`
 
 clean:
 	@@echo "Removing Distribution directory:" ${DIST_DIR}
