@@ -6,15 +6,15 @@
 var
 	
 	// storage api
-	storage = window.localStorage,
 	get = tenk.get,
 	
 	// trie implementation
 	trie = tenk.trie,
 	
-	// cache of words
-	wordcache,
-	keycount;
+	// word data, trie instance, and count of urls
+	data,
+	trieobj,
+	count;
 
 /**
  * get array of suggestions based on input string.
@@ -25,21 +25,21 @@ function suggest(query) {
 	// trim query
 	query = query.replace(/^\s+|\s$/g, '').toLowerCase();
 	
+	var c = get("COUNT") || 0;
+	
 	// short-circuit if query is empty or if there is less than one element in storage
-	if (!query || !storage.length) {
+	if (!query || !c) {
 		return [];
 	}
 	
-	var
-		
-		// all words data (trie structure)
-		data = get("ALL"),
-		
-		// trie for data lookup
-		t = trie(data);
+	// on init, or if count has changed, create a trie object
+	if (c !== count) {
+		data = get("ALL");
+		trieobj = trie(data);
+	}
 	
 	// return first few trie matches
-	return t.match(query).slice(0,15);
+	return trieobj.match(query).slice(0,15);
 	
 }
 
