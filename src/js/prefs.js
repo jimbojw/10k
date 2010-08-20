@@ -13,15 +13,33 @@ var
 	$prefs = $('.prefs.pane'),
 	$input = $prefs.find('input').eq(0),
 	$saved = $prefs.find('.saved'),
+	$csscode = $prefs.find('.csscode'),
+	$jscode = $prefs.find('.jscode'),
 	
 	// prefered web search
-	s = get("S") || '';
+	s = get("S") || '',
+	
+	// custom code
+	css = get("CSS") || null,
+	js = get("JS") || null;
 
 if (!s) {
 	s = $prefs.find('.def').attr('href');
 	set("S", s);
 }
 $input.val(s);
+
+if (css === null) {
+	css = '/* your custom css here */';
+	set("CSS", css);
+}
+$csscode.val(css);
+
+if (js === null) {
+	js = '/* your custom js here */';
+	set("JS", js);
+}
+$jscode.val(js);
 
 $prefs.find('li a').click(function(e){
 	
@@ -35,8 +53,9 @@ $prefs.find('form').submit(function(e){
 	
 	e.preventDefault();
 	
-	s = $input.val();
-	set("S", s);
+	set("S", $input.val());
+	set("CSS", $csscode.val());
+	set("JS", $jscode.val());
 	
 	$saved.css({
 		visibility: '',
@@ -50,5 +69,11 @@ $prefs.find('form').submit(function(e){
 	}, 1000);
 	
 });
+
+// add custom css
+$('<style type="text/css">' + css + '</style>').appendTo('head');
+
+// add custom js
+$(new Function(js));
 
 })(window['10kse'],jQuery);
