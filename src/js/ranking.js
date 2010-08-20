@@ -283,11 +283,169 @@ function bm25(ids, terms, type, recordcache) {
 	
 }
  
+/**
+ * implementation of a sphinx-like phase proximity factor.
+ * @param {object} ids Hash in which keys are document ids (values unimportant).
+ * @param {array} terms List of search terms provided.
+ * @param {string} type The type of content to count ('s'election, 't'itle, 'p'riority, or 'c'ontent).
+ * @param {object} recordcache Hash mapping words to their localStorage values.
+ * @return {object} Hash of id/score pairs.
+ */
+function proximity(ids, terms, type, recordcache) {
+	
+	var
+		
+		// scores to return
+		scores = {},
+		
+		// id of current doc
+		id,
+		
+		// current term
+		term,
+		
+		// word/id record and type entry
+		record,
+		entry,
+		
+		// positions for current term in document
+		positions,
+		
+		// current position within position list
+		pos,
+		
+		// mixed list of word positions for all terms for a document
+		list,
+		
+		// count of word positions
+		count,
+		
+		// inverted index pointing positions to terms
+		index,
+		
+		// iteration vars
+		i,
+		l,
+		j,
+		n,
+		m;
+	
+	for (id in ids) {
+		
+		list = [];
+		count = [];
+		index = {};
+		
+		// build up index and list of positions for scan
+		for (i=0, l=terms.length; i<l; i++) {
+			
+			term = terms[i];
+			
+			record = recordcache[term];
+			
+			if (record === undefined) {
+				record = recordcache[term] = get("W-" + term);
+			}
+			
+			if (record) {
+				
+				entry = record[id];
+				if (entry) {
+					
+					positions = entry[type];
+					if (positions) {
+						
+						for (j=0, n=positions.length; j<n; j++) {
+							
+							pos = positions[j];
+							list[count++] = pos;
+							index[pos] = term;
+							
+						}
+						
+					}
+					
+				}
+				
+			}
+			
+		}
+		
+		longest = 0;
+		
+		// scan back through index and list to find the longest sequence
+		for (i=0, l=terms.length; i<l; i++) {
+			
+			term = terms[i];
+			
+			record = recordcache[term];
+			
+			if (record === undefined) {
+				record = recordcache[term] = get("W-" + term);
+			}
+			
+			if (record) {
+				
+				entry = record[id];
+				if (entry) {
+					
+					positions = entry[type];
+					if (positions) {
+						
+						for (j=0, n=positions.length; j<n; j++) {
+							
+							pos = positions[j];
+							
+							// current proximity length starts at one, because this term matched
+							m = 1;
+							
+							while (
+								// we haven't run off the end of the terms array
+								i + m < l && 
+								// and the next word matches the next term in the query
+								index[pos + m] === terms[i + m]
+							) {
+								// increment m
+								m++;
+							}
+							
+							// if we've found a new winner, set it
+							if (m > longest) {
+								longest = m;
+							}
+							
+						}
+						
+					}
+					
+				}
+				
+			}
+			
+			// short-circuit if we've found the longest possible match
+			if (i + longest >= l) {
+				break;
+			}
+			
+		}
+		
+		// set score if a proximity sequence was found
+		if (longest) {
+			scores[id] = longest;
+		}
+		
+	}
+	
+	console.dir(scores);
+	return scores;
+	
+}
 
 // exports
 tenk.normalize = normalize;
 tenk.topdistance = topdistance;
 tenk.bm25 = bm25;
+tenk.proximity = proximity;
 
 })(window['10kse']);
 
