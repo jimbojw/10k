@@ -24,12 +24,11 @@ var buf = '[' + sizes + ']' + contents.join('');
 // determine image size
 var
 	len = buf.length,
-	px = Math.ceil(len / 3),
-	w = px * 3;
+	px = Math.ceil(len / 3);
 
 // headers
 print("P3");
-print("# data as pgm");
+print("# data as ppm");
 print(px + " " + 1);
 print(255);
 
