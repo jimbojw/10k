@@ -191,6 +191,20 @@ function topdistance(ids, terms, type, recordcache) {
 	
 }
 
+/**
+ * implementation of sphinx's modified bm25 algorithm.
+ * @param {object} ids Hash in which keys are document ids (values unimportant).
+ * @param {array} terms List of search terms provided.
+ * @param {string} type The type of content to count ('s'election, 't'itle, 'p'riority, or 'c'ontent).
+ * @param {object} recordcache Hash mapping words to their localStorage values.
+ * @return {object} Hash of id/score pairs.
+ */
+function bm25(ids, terms, type, recordcache) {
+	
+	
+	
+}
+
 // exports
 tenk.wordcount = wordcount;
 tenk.normalize = normalize;
