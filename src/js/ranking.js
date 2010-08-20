@@ -6,7 +6,10 @@
 var
 	
 	// storage api
-	get = tenk.get;
+	get = tenk.get,
+	
+	// maths
+	log = Math.log;
 
 /**
  * normalize a set of scores.
@@ -201,14 +204,150 @@ function topdistance(ids, terms, type, recordcache) {
  */
 function bm25(ids, terms, type, recordcache) {
 	
+	/* sphinx pseudo code
+	 * ref: http://sphinxsearch.com/blog/2010/08/17/how-sphinx-relevance-ranking-works/
+	BM25 = 0
+	foreach ( keyword in matching_keywords )
+	{
+		n = total_matching_documents ( keyword )
+		N = total_documents_in_collection
+		k1 = 1.2
+		 
+		TF = current_document_occurrence_count ( keyword )
+		IDF = log((N-n+1)/n) / log(1+N)
+		BM25 = BM25 + TF*IDF/(TF+k1)
+	}
 	
+	// normalize to 0..1 range
+	BM25 = 0.5 + BM25 / ( 2*num_keywords ( query ) )
+	*/
+	
+	if (!recordcache) {
+		recordcache = {};
+	}
+	
+	var
+		scores = {},
+		term,
+		record,
+		id,
+		entry,
+		positions,
+		low,
+		
+		// count number of matching documents for each term (term/count)
+		termcount = {},
+		
+		// count of all documents
+		count = get("COUNT"),
+		invlogcount = 1 / log(1 + count),
+		
+		// bm25 factors
+		bm25,
+		k1 = 1.2,
+		tf, // term frequency
+		idf, // inverse document frequency
+		denom = 1 / (2 * terms.length), // normalization denominator
+		
+		// iteration vars
+		i,
+		l;
+	
+	// count matching documents
+	for (id in ids) {
+		
+		for (i=0, l=terms.length; i<l; i++) {
+			
+			term = terms[i];
+			if (term.length > 2 && !stop[term]) {
+				
+				record = recordcache[term];
+				
+				if (record === undefined) {
+					record = recordcache[term] = get("W-" + term);
+				}
+				
+				if (record) {
+					
+					entry = record[id];
+					if (entry) {
+						
+						positions = entry[type];
+						if (positions) {
+							
+							termcount[term] = (termcount[term] || 0) + 1;
+							
+						}
+						
+					}
+					
+				}
+				
+			}
+			
+		}
+		
+	}
+	
+	for (id in ids) {
+		
+		bm25 = 0;
+		
+		for (i=0, l=terms.length; i<l; i++) {
+			
+			if (termcount[term]) {
+				
+				// calculate idf (same for all these matching docs for all terms)
+				idf = log((count - termcount[term] + 1) / termcount[term]) * invlogcount;
+				
+				term = terms[i];
+				if (term.length > 2 && !stop[term]) {
+					
+					tf = 0;
+					
+					record = recordcache[term];
+					
+					if (record) {
+						
+						entry = record[id];
+						if (entry) {
+							
+							positions = entry[type];
+							if (positions) {
+								
+								tf = positions.length;
+								
+							}
+							
+						}
+						
+					}
+					
+					if (tf) {
+						bm25 += tf * idf / (tf + k1);
+					}
+				
+				}
+			
+			}
+			
+			// add normalized score
+			scores[id] = 0.5 + bm25 * denom;
+			
+		}
+		
+	}
+	
+	return scores;
 	
 }
+ 
 
 // exports
 tenk.wordcount = wordcount;
 tenk.normalize = normalize;
 tenk.topdistance = topdistance;
+tenk.bm25 = bm25;
 
 })(window['10kse']);
 
