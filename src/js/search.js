@@ -201,6 +201,16 @@ $('form').submit(function(e){
 	setTimeout(search, 100);
 });
 
+// implement web search button
+$('.search').find('input[name=web]').click(function(e){
+	window.location.assign(
+		(get("S") || '').replace(
+			'%s',
+			encodeURIComponent($input.val() || '')
+		)
+	);
+});
+
 // focus on the search input
 $(function(){
 	$input.focus();
