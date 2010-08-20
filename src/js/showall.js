@@ -4,7 +4,7 @@
 (function(tenk,$,window){
 
 // short-circuit if this page is in an iframe
-if (window !== window.top) {
+if (window.window !== window.top) {
 	return;
 }
 
