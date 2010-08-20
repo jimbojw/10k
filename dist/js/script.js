@@ -777,19 +777,27 @@ $('#add')
 /**
  * listen for incoming messages when in iframe mode
  */
-if (window !== window.top && document.location.hash === '#' + key) {
-	window.addEventListener("message", function(event) {
+if (window !== window.top) {
+	if (document.location.hash === '#' + key) {
+		window.addEventListener("message", function(event) {
 		
-		// serve script to anyone who requests it
-		if (event.data === "script") {
-			event.source.postMessage('(' + tenk.scanner + ')(window,document)', "*");
-			return;
-		}
+			// serve script to anyone who requests it
+			if (event.data === "script") {
+				event.source.postMessage('(' + tenk.scanner + ')(window,document)', "*");
+				return;
+			}
 		
-		// process index submission
-		tenk.indexer(JSON.parse(event.data));
+			// process index submission
+			tenk.indexer(JSON.parse(event.data));
 		
-	}, false);
+		}, false);
+	} else {
+		alert(
+			"Either your bookmarklet is out of date, or a malicious site \n" +
+			"is trying to add itself to your search index. \n\n" +
+			"In any case, you should update your 'add' bookmarklet. Thanks!"
+		);
+	}
 }
 
 })(window,document,jQuery,window['10kse']);
@@ -819,7 +827,7 @@ if (id > 0) {
 	
 	var $list = $('<ul></ul>')
 		.appendTo(
-			$('.entries')
+			$('.allpages')
 				.find('div')
 					.empty()
 		);

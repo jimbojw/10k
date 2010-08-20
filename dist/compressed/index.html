@@ -46,7 +46,10 @@ The 'add' button below is a
 </div>
 <div class="allpages pane">
 <h2><span>All pages</span></h2>
-<div><p>none yet :/</p></div>
+<div>
+<p>It doesn't appear you've added any pages yet.</p>
+<p>Use the bookmarklet in the <a href="#welcome" class="nav">welcome tab</a> to add some.</p>
+</div>
 </div>
 <div class="prefs pane">
 <h2><span>Preferences</span></h2>
@@ -82,8 +85,8 @@ selection:r,title:k.title,priority:u.join(" "),content:m.join(" ")}),"*")}})(win
 a.url,{id:b,text:a.content,title:a.title})}else{b=o("COUNT")||0;h("ID-"+b,a.url);h("COUNT",b+1);h("URL-"+a.url,{id:b,text:a.content,title:a.title})}c={};k(b,"s",a.selection,c);k(b,"t",a.title,c);k(b,"p",a.priority,c);k(b,"c",a.content,c);a=o("ALL")||{};b=d(a);var j;for(j in c)b.add(j);h("ALL",a)}})(window["10kse"],window);
 (function(l,p,k,o){var h=o.get,f=o.set,i=p.location.href;h=h("K");if(!h){h=Math.random();f("K",h)}i=JSON.stringify(i.replace(/#.*|$/,"#"+h));f="javascript:("+(function(d,a,b){var c=d["10kse"];c||(c=d["10kse"]={});if(c.scanner)return c.scanner();d.addEventListener("message",function(e){if(b.substr(0,e.origin.length)===e.origin){c.scanner=new Function(e.data);c.scanner()}},false);var j=c.iframe=a.createElement("iframe");d=j.style;j.setAttribute("src",b);d.width=d.height="1px";d.top=d.left="-2px";d.border=
 "none";d.position="absolute";var g=false;j.onload=j.onreadystatechange=function(){if(!g&&(!this.readyState||this.readyState==="loaded"||this.readyState==="complete")){g=true;j.onload=j.onreadystatechange=null;j.contentWindow.postMessage("script",b)}};a.body.appendChild(j)}+"").replace(/\/\*[\s\S]*?\*\//g,"").replace(/\s+/g," ")+")(window,document,"+i+")";k("#add").attr("href",f).click(function(d){d.preventDefault();alert("1. Drag this link to your bookmarks,\n2. Navigate to another page,\n3. Click the bookmarklet to add that page to your search engine.")});
-l!==l.top&&p.location.hash==="#"+h&&l.addEventListener("message",function(d){d.data==="script"?d.source.postMessage("("+o.scanner+")(window,document)","*"):o.indexer(JSON.parse(d.data))},false)})(window,document,jQuery,window["10kse"]);
-(function(l,p,k){if(k===k.top){l=l.get;k=l("COUNT")||0;var o,h;if(k>0)for(var f=p("<ul></ul>").appendTo(p(".entries").find("div").empty());k>0;){k--;o=l("ID-"+k);h=l("URL-"+o);p("<li><a></a></li>").find("a").attr("href",o).attr("title",h.title).text(h.title).end().appendTo(f)}}})(window["10kse"],jQuery,window);
+if(l!==l.top)p.location.hash==="#"+h?l.addEventListener("message",function(d){d.data==="script"?d.source.postMessage("("+o.scanner+")(window,document)","*"):o.indexer(JSON.parse(d.data))},false):alert("Either your bookmarklet is out of date, or a malicious site \nis trying to add itself to your search index. \n\nIn any case, you should update your 'add' bookmarklet. Thanks!")})(window,document,jQuery,window["10kse"]);
+(function(l,p,k){if(k===k.top){l=l.get;k=l("COUNT")||0;var o,h;if(k>0)for(var f=p("<ul></ul>").appendTo(p(".allpages").find("div").empty());k>0;){k--;o=l("ID-"+k);h=l("URL-"+o);p("<li><a></a></li>").find("a").attr("href",o).attr("title",h.title).text(h.title).end().appendTo(f)}}})(window["10kse"],jQuery,window);
 (function(l,p){var k=l.get;l.wordcount=function(o,h,f,i){i||(i={});for(var d={},a,b,c,j=0,g=h.length;j<g;j++){a=h[j];if(a.length>2&&!stop[a]){b=i[a];if(b===p)b=i[a]=k("W-"+a);if(b)for(c in o)if(a=b[c])if(a=a[f]){if(d[c]===p)d[c]=0;d[c]+=+a.length}}}return d};l.normalize=function(o,h,f){if(h===p)h=1;if(f===p)f=0.5;var i={},d,a,b,c;for(d in o){c=i[d]=o[d]*h;if(a===p||c>a)a=c;if(b===p||c<b)b=c}if(a===b){for(d in i)i[d]=f;return i}for(d in i)i[d]=(i[d]-b)*(1/(a-b));return i};l.topdistance=function(o,
 h,f,i){i||(i={});var d={},a,b,c,j;for(c in o){j=null;for(var g=0,e=h.length;g<e;g++){a=h[g];if(a.length>2&&!stop[a]){b=i[a];if(b===p)b=i[a]=k("W-"+a);if(b)if(a=b[c])if(a=a[f])if(j===null||a[0]<j)j=a[0]}}if(j!==null)d[c]=j}return d}})(window["10kse"]);
 (function(l,p,k){var o=p("<div></div>");l.highlight=function(h,f,i){if(i===k)i=true;h=o.text(h).html();var d=h.toLowerCase(),a={},b={},c=[],j,g,e,m,s,r;j=0;for(g=f.length;j<g;j++){e=f[j].toLowerCase();m=e.length;if(m>2&&!a[e]){a[e]=true;for(r=s=0;s<3;){r=d.indexOf(e,r);if(r===-1)break;var u=h.charAt(r-1).toLowerCase(),q=h.charAt(r+m).toLowerCase();if((u<"a"||u>"z")&&(q<"a"||q>"z")){s++;c[c.length]=r;b[r]=e}r+=m}}}c.sort(l.asc);f=[];d=0;m=c.length;for(j=r=0;d<200&&j<=m;){a=c[j];e=j<m?h.substr(r,a-
