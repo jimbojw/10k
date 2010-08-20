@@ -96,6 +96,7 @@ function search() {
 		normalize = tenk.normalize,
 		topdistance = tenk.topdistance,
 		bm25 = tenk.bm25,
+		proximity = tenk.proximity,
 		
 		// scoring
 		rankings = [
@@ -110,7 +111,13 @@ function search() {
 			[2.5, normalize(bm25(ids, terms, "s", recordcache))],
 			[2.0, normalize(bm25(ids, terms, "t", recordcache))],
 			[1.5, normalize(bm25(ids, terms, "p", recordcache))],
-			[1.0, normalize(bm25(ids, terms, "c", recordcache))]
+			[1.0, normalize(bm25(ids, terms, "c", recordcache))],
+			
+			// proximity score
+			[5.0, normalize(proximity(ids, terms, "s", recordcache))],
+			[4.0, normalize(proximity(ids, terms, "t", recordcache))],
+			[3.5, normalize(proximity(ids, terms, "p", recordcache))],
+			[3.0, normalize(proximity(ids, terms, "c", recordcache))]
 			
 		],
 		
