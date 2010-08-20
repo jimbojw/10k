@@ -170,12 +170,13 @@ textarea {
 /**
  * menu.css - css for menu system (navigation)
  */
-nav ul {
+.nav ul {
 	margin: 0 1em;
 	padding: 0;
+	padding-top: 1px; /* fix for IE 9 */
 	list-style-type: none;
 }
-nav li {
+.nav li {
 	float: left;
 	margin: 0 0.6em;
 	padding: 0.25em 1em;
@@ -189,7 +190,7 @@ nav li {
 	color: #444;
 	cursor: pointer;
 }
-nav .selected {
+.nav .selected {
 	color: #06c;
 	background: #fff;
 	z-index: 1;

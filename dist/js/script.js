@@ -77,7 +77,7 @@ var
  */
 function showtab(name) {
 	
-	var $selected = $('.pane.' + name + ', nav .' + name);
+	var $selected = $('.pane.' + name + ', .nav .' + name);
 	
 	if (!$selected.length) {
 		throw "no such tab named '" + name + "'";
@@ -110,7 +110,7 @@ function tabclick(e){
 }
 
 // listen for tab clicks
-$('nav li').click(tabclick);
+$('.nav li').click(tabclick);
 
 // setup and content bound navigation links
 $('a.nav').click(function(e){
@@ -192,7 +192,9 @@ $prefs.find('form').submit(function(e){
 	setTimeout(function(){
 		$saved.animate({
 			opacity: 0
-		}, 'slow');
+		}, 'slow', function(){
+			$saved.css({ visibility: 'hidden' });
+		});
 	}, 1000);
 	
 });
@@ -362,7 +364,7 @@ function scanner(window,document,undefined) {
 	 * utility function for getting an element's text content.
 	 */
 	function gettext(elem) {
-		return elem.innerText || elem.textContent;
+		return elem.textContent !== undefined ? elem.textContent : elem.innerText;
 	}
 	
 	// concepts borrowed from readability, and adapted to search content scanning
@@ -473,7 +475,7 @@ function scanner(window,document,undefined) {
 	best = best || document.body;
 	
 	// get selection - best clue as to the important content on the page
-	var selection = document.getSelection() || '';
+	var selection = (document.getSelection && document.getSelection()) + '';
 	
 	// prioritize headings over other content
 	var
@@ -631,7 +633,7 @@ function extract(text) {
 function update(id, type, text, allwords) {
 	
 	// short-circuit of nothing of value has been sent
-	text = '' + text;
+	text = text || '';
 	if (!text || !(/[a-z]/i).test(text)) {
 		return;
 	}
@@ -788,12 +790,17 @@ function bookmarklet(window,document,origin) {
 	}
 	
 	/* listen for script posted from origin and eval it */
-	window.addEventListener("message", function (event) {
+	function chainload(event) {
 		if (origin.substr(0, event.origin.length)===event.origin) {
 			tenk.scanner = new Function(event.data);
 			tenk.scanner();
 		}
-	}, false);
+	}
+	if (window.addEventListener) {
+		window.addEventListener("message", chainload, false);
+	} else {
+		window.attachEvent("onmessage", chainload);
+	}
 	
 	/* open iframe to origin and style it */
 	var
@@ -856,20 +863,23 @@ $('#add')
 /**
  * listen for incoming messages when in iframe mode
  */
-if (window !== window.top) {
+if (window.window !== window.top) {
 	if (document.location.hash === '#' + key) {
-		window.addEventListener("message", function(event) {
-		
+		$(window).bind('message', function(event) {
+			
+			// unwrap jquery wrapper
+			event = event.originalEvent || event;
+			
 			// serve script to anyone who requests it
 			if (event.data === "script") {
 				event.source.postMessage('(' + tenk.scanner + ')(window,document)', "*");
 				return;
 			}
-		
+			
 			// process index submission
 			tenk.indexer(JSON.parse(event.data));
-		
-		}, false);
+			
+		});
 	} else {
 		alert(
 			"Either your bookmarklet is out of date, or a malicious site \n" +
@@ -887,7 +897,7 @@ if (window !== window.top) {
 (function(tenk,$,window){
 
 // short-circuit if this page is in an iframe
-if (window !== window.top) {
+if (window.window !== window.top) {
 	return;
 }
 
@@ -936,6 +946,9 @@ var
 	
 	// storage api
 	get = tenk.get,
+	
+	// so-called stop words (uninteresting to search/ranking)
+	stop = tenk.stop,
 	
 	// maths
 	log = Math.log;
