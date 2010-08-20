@@ -100,6 +100,8 @@ function update(id, type, text, allwords) {
 		// entry for current document within record
 		entry;
 	
+	// NOTE: This is the slow operation on scanning/indexing, so any
+	//       efforts to optimize must go here first!
 	for (word in index) {
 		
 		// get entry for word from store
