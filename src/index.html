@@ -57,16 +57,18 @@ The 'add' button below is a
 </div>
 <div class="prefs pane">
 <h2><span>Preferences</span></h2>
+<form>
 <p>When using the 'web' search option, use this url where <tt>%s</tt> is the query param:</p>
 <p><input type="text" /></p>
 <p>Enter your own walue, or select from the following:</p>
 <ul>
 <li><a href="http://www.ask.com/web?q=%s" title="ask">ask</a></li>
 <li><a href="http://www.bing.com/search?q=%s" title="bing">bing</a></li>
-<li><a href="http://www.google.com/#q=%s" title="google">google</a></li>
+<li><a href="http://www.google.com/#q=%s" title="google" class="def">google</a></li>
 <li><a href="http://search.yahoo.com/search?p=%s" title="yahoo">yahoo</a></li>
 </ul>
-<p><input type="button" name="save" value="Save" /></p>
+<p><input type="submit" name="save" value="Save" /></p>
+</form>
 </div>
 <div class="about pane">
 <h2><span>About</span></h2>
