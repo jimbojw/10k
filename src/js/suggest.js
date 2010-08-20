@@ -1,7 +1,7 @@
 /**
  * suggest.js
  */
-(function(window,tenk,undefined){
+(function(tenk,undefined){
 
 var
 	
@@ -46,4 +46,4 @@ function suggest(query) {
 // exports
 tenk.suggest = suggest;	// short circuit if there are no matches
 
-})(window,window['10kse']);
+})(window['10kse']);
