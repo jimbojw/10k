@@ -23,7 +23,7 @@ if (id > 0) {
 	
 	var $list = $('<ul></ul>')
 		.appendTo(
-			$('.entries')
+			$('.allpages')
 				.find('div')
 					.empty()
 		);
