@@ -21,7 +21,7 @@ var
  */
 function showtab(name) {
 	
-	var $selected = $('.pane.' + name + ', nav .' + name);
+	var $selected = $('.pane.' + name + ', .nav .' + name);
 	
 	if (!$selected.length) {
 		throw "no such tab named '" + name + "'";
@@ -54,7 +54,7 @@ function tabclick(e){
 }
 
 // listen for tab clicks
-$('nav li').click(tabclick);
+$('.nav li').click(tabclick);
 
 // setup and content bound navigation links
 $('a.nav').click(function(e){
