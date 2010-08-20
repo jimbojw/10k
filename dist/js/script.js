@@ -29,7 +29,7 @@ for (var i=0, l=stopwords.length; i<l; i++) {
  * get an item from localStorage.
  */
 function get(key) {
-	var value = storage.getItem(key);
+	var value = storage.getItem('10kse-' + key);
 	return value ? parse(value) : value;
 }
 
@@ -37,7 +37,7 @@ function get(key) {
  * put an item into localStorage
  */
 function set(key, value) {
-	return storage.setItem(key, stringify(value));
+	return storage.setItem('10kse-' + key, stringify(value));
 }
 
 /**
@@ -54,6 +54,131 @@ tenk.set = set;
 tenk.stop = stop;
 
 })(window);
+/**
+ * trie.js
+ */
+(function(tenk,$,undefined){
+
+/**
+ * implementation of the add member.
+ * @param {string} s The string to add.
+ */
+function add(s) {
+	
+	var
+		node = this.data,
+		next,
+		ch;
+	
+	for (var i=0, l=s.length; i<l; i++) {
+		
+		ch = s.charAt(i);
+		next = node[ch];
+		
+		if (!next) {
+			next = node[ch] = {};
+		}
+		
+		node = next;
+		
+	}
+	
+	node.$ = 1;
+	
+}
+
+/**
+ * find a node by matching characters.
+ * @param {string} s The string to find.
+ * @return {mixed} Either the matching node, or null if not found.
+ */
+function find(s) {
+	
+	var
+		node = this.data,
+		next,
+		ch;
+	
+	for (var i=0, l=s.length; i<l; i++) {
+		
+		ch = s.charAt(i);
+		next = node[ch];
+		
+		if (!next) {
+			return null;
+		}
+		
+		node = next;
+		
+	}
+	
+	return node;
+	
+}
+
+/**
+ * grab previously added strings starting with the query string.
+ * @param {string} s The string to match.
+ * @return {array} An array of matching strings (may be empty).
+ */
+function match(s) {
+	
+	var node = this.find(s);
+	
+	if (!node) {
+		return [];
+	}
+	
+	var
+		queue = [[s, node]],
+		result = [],
+		count = 0,
+		pair,
+		ch;
+	
+	while (queue.length) {
+		
+		pair = queue.shift();
+		s = pair[0];
+		node = pair[1];
+		
+		if (node.$) {
+			result[count++] = s;
+		}
+		
+		for (ch in node) {
+			if (ch !== '$') {
+				queue[queue.length] = [s + ch, node[ch]];
+			}
+		}
+		
+	}
+	
+	result.sort();
+	
+	return result;
+	
+}
+
+/**
+ * creates a trie around a given data structure.
+ */
+function trie(data) {
+	
+	return {
+		add: add,
+		data: data,
+		find: find,
+		match: match
+	};
+	
+}
+
+// exports
+tenk.trie = trie;
+
+})(window['10kse'],jQuery);
+
 /**
  * scanner.js - responsible for extracting potentially interesting content from the page.
  */
@@ -288,7 +413,10 @@ var
 	nonword = /[^0-9a-z_]+/i,
 	
 	// so-called "stop" words (uninteresting to search)
-	stop = tenk.stop;
+	stop = tenk.stop,
+	
+	// trie implementation
+	trie = tenk.trie;
 
 /**
  * extract meaningful words and their positions from input text (create an inverted index).
@@ -348,8 +476,9 @@ function extract(text) {
  * @param {int} id ID of the document being updated.
  * @param {string} type Type of text being considered (selection, priority, or full content).
  * @param {string} text Text to be indexed.
+ * @param {object} allwords Hash of all words (update will add to this hash).
  */
-function update(id, type, text) {
+function update(id, type, text, allwords) {
 	
 	// short-circuit of nothing of value has been sent
 	text = '' + text;
@@ -371,6 +500,8 @@ function update(id, type, text) {
 		// entry for current document within record
 		entry;
 	
+	// NOTE: This is the slow operation on scanning/indexing, so any
+	//       efforts to optimize must go here first!
 	for (word in index) {
 		
 		// get entry for word from store
@@ -388,6 +519,8 @@ function update(id, type, text) {
 		// set record for word in store
 		set("W-" + word, record);
 		
+		// add word to allwords hash
+		allwords[word] = 1;
 	}
 	
 }
@@ -441,11 +574,26 @@ function indexer(data) {
 		
 	}
 	
+	// keep track of all words seen during this update
+	var allwords = {};
+	
 	// update indexes
-	update(id, "s", data.selection);
-	update(id, "t", data.title);
-	update(id, "p", data.priority);
-	update(id, "c", data.content);
+	update(id, "s", data.selection, allwords);
+	update(id, "t", data.title, allwords);
+	update(id, "p", data.priority, allwords);
+	update(id, "c", data.content, allwords);
+	
+	// add all words to trie for autocompletion
+	var
+		d = get("ALL") || {},
+		t = trie(d),
+		word;
+	
+	for (word in allwords) {
+		t.add(word);
+	}
+	
+	set("ALL", d);
 	
 }
 
@@ -1035,40 +1183,12 @@ var
 	storage = window.localStorage,
 	get = tenk.get,
 	
+	// trie implementation
+	trie = tenk.trie,
+	
 	// cache of words
 	wordcache,
 	keycount;
-
-/**
- * retrieves a list of known words.
- */
-function allwords() {
-	
-	var count = storage.length;
-	
-	if (count === keycount) {
-		return wordcache;
-	}
-	
-	keycount = count;
-	wordcache = [];
-	count = 0;
-	
-	for (var i=0; i<keycount; i++) {
-		
-		var key = storage.key(i);
-		
-		if (key.indexOf('W-') === 0) {
-			wordcache[count++] = key.substr(2);
-		}
-		
-	}
-	
-	wordcache.sort();
-	
-	return wordcache;
-	
-}
 
 /**
  * get array of suggestions based on input string.
@@ -1086,45 +1206,14 @@ function suggest(query) {
 	
 	var
 		
-		words = allwords(),
-		len = words.length,
+		// all words data (trie structure)
+		data = get("ALL"),
 		
-		// low and high bounds for binary search
-		low = 0,
-		high = len - 1,
-		mid;
+		// trie for data lookup
+		t = trie(data);
 	
-	// find first word that starts with query
-	while (high - low > 1) {
-		
-		mid = low + ((high - low) >> 1);
-		
-		if (words[mid] <= query) {
-			low = mid;
-		} else {
-			high = mid;
-		}
-		
-	}
-	
-	// first matching word will either be low or high
-	var start;
-	if (words[low].indexOf(query) === 0) {
-		start = low;
-	} else if (words[high].indexOf(query) === 0) {
-		start = high;
-	} else {
-		// short-circit if there are no matches
-		return [];
-	}
-	
-	// find the last word, up to 20
-	var end = start + 16 > len ? len - 1 : start + 15;
-	while (words[end].indexOf(query) !== 0) {
-		end--;
-	}
-	
-	return words.slice(start, end + 1);
+	// return first few trie matches
+	return t.match(query).slice(0,15);
 	
 }
 
@@ -1210,7 +1299,7 @@ function autocomplete(input) {
 				value = $input.val(),
 				pos = value.lastIndexOf(' ') + 1;
 			
-			$input.get(0).value = previous = value.substr(0, pos) + word;
+			$input.val(previous = value.substr(0, pos) + word);
 			
 			$selected.removeClass(selectedClass);
 			$selected = null;
@@ -1260,7 +1349,49 @@ function autocomplete(input) {
 			value = $input.val(),
 			which = e.which;
 		
-		if (value !== previous) {
+		if (which === enterkey || which === rightkey) {
+			
+			select();
+			
+		} else if (which === esckey) {
+			
+			hide();
+			
+		} else if (which === upkey || which === downkey) {
+			
+			if ($selected) {
+				
+				if (which === upkey) {
+					
+					var $prev = $selected.prev();
+					if ($prev.length) {
+						
+						$selected.removeClass(selectedClass);
+						$selected = $prev.addClass(selectedClass);
+						
+					}
+					
+				} else {
+					
+					var $next = $selected.next();
+					if ($next.length) {
+						
+						$selected.removeClass(selectedClass);
+						$selected = $next.addClass(selectedClass);
+						
+					}
+					
+				}
+				
+			} else {
+				
+				$selected = $ul.find('li').eq(0).addClass(selectedClass);
+				
+			}
+			
+			show();
+			
+		} else if (value !== previous) {
 			
 			previous = value;
 			
@@ -1297,51 +1428,7 @@ function autocomplete(input) {
 				
 			}
 			
-			
-		} else if (which === upkey || which === downkey) {
-			
-			if ($selected) {
-				
-				if (which === upkey) {
-					
-					var $prev = $selected.prev();
-					if ($prev.length) {
-						
-						$selected.removeClass(selectedClass);
-						$selected = $prev.addClass(selectedClass);
-						
-					}
-					
-				} else {
-					
-					var $next = $selected.next();
-					if ($next.length) {
-						
-						$selected.removeClass(selectedClass);
-						$selected = $next.addClass(selectedClass);
-						
-					}
-					
-				}
-				
-			} else {
-				
-				$selected = $ul.find('li').eq(0).addClass(selectedClass);
-				
-			}
-			
-			show();
-			
-		} else if (which === enterkey || which === rightkey) {
-			
-			select();
-			
-		} else if (which === esckey) {
-			
-			hide();
-			
 		}
-		
 	}
 	
 	/**
@@ -1440,9 +1527,7 @@ var
 /**
  * search form behavior
  */
-function search(e) { 
-	
-	e.preventDefault();
+function search() { 
 	
 	var
 		
@@ -1617,7 +1702,10 @@ function search(e) {
 }
 
 // attach search action to form submission
-$('form').submit(search);
+$('form').submit(function(e){
+	e.preventDefault();
+	setTimeout(search, 100);
+});
 
 // focus on the search input
 $(function(){
