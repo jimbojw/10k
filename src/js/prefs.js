@@ -65,7 +65,9 @@ $prefs.find('form').submit(function(e){
 	setTimeout(function(){
 		$saved.animate({
 			opacity: 0
-		}, 'slow');
+		}, 'slow', function(){
+			$saved.css({ visibility: 'hidden' });
+		});
 	}, 1000);
 	
 });
