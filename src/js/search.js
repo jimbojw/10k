@@ -45,7 +45,10 @@ function search() {
 		id,
 		
 		// record cache
-		recordcache = {};
+		recordcache = {},
+		
+		// any matches at all?
+		any = false;
 	
 	// short-circuit if no terms were specified
 	if (!query || query === previous) {
@@ -64,9 +67,27 @@ function search() {
 				for (id in record) {
 					ids[id] = (ids[id] || 0) + 1;
 				}
+				any = true;
 			}
 		}
 		
+	}
+	
+	// short-circuit with "no results" if there were no matches
+	if (!any) {
+		
+		$results.slideUp('slow', function(){
+			
+			$results.html(
+				"<dt>Sorry, no pages were found to match your query. :/</dt>" +
+				"<dd><p>You should probably try searching for something else.</p></dd>"
+			);
+			
+			$results.slideDown('slow');
+			
+		});
+		
+		return;
 	}
 	
 	var
