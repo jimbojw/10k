@@ -55,6 +55,68 @@ tenk.stop = stop;
 
 })(window);
 /**
+ * menu.js - implement menu navigation.
+ */
+(function(tenk,$,undefined) {
+
+var
+	
+	// storage api
+	get = tenk.get,
+	set = tenk.set,
+	
+	// common string - helps compressibility
+	activeClass = 'selected',
+	
+	// show only the active pane and matching tab
+	$active;
+
+/**
+ * shows a tab given its name.
+ * @param {string} name The name of the tab to show.
+ */
+function showtab(name) {
+	
+	var $selected = $('.pane.' + name + ', nav .' + name);
+	
+	if (!$selected.length) {
+		throw "no such tab named '" + name + "'";
+	}
+	
+	if ($active) {
+		$active.removeClass(activeClass);
+	}
+	
+	$active = $selected.addClass(activeClass);
+	
+	set("TAB", name);
+	
+}
+
+// initialize active tab
+showtab(get("TAB") || 'welcome');
+
+/**
+ * handler for tab clicking
+ */
+function tabclick(e){
+	
+	var $li = $(this);
+	
+	if (!$li.hasClass('active')) {
+		showtab(this.className);
+	}
+	
+}
+
+// listen for tab clicks
+$('nav li').click(tabclick);
+
+// exports
+tenk.showtab = showtab;
+
+})(window['10kse'],jQuery);
+/**
  * trie.js
  */
 (function(tenk,$,undefined){
@@ -1175,20 +1237,20 @@ tenk.highlight = highlight;
 /**
  * suggest.js
  */
-(function(window,tenk,undefined){
+(function(tenk,undefined){
 
 var
 	
 	// storage api
-	storage = window.localStorage,
 	get = tenk.get,
 	
 	// trie implementation
 	trie = tenk.trie,
 	
-	// cache of words
-	wordcache,
-	keycount;
+	// word data, trie instance, and count of urls
+	data,
+	trieobj,
+	count;
 
 /**
  * get array of suggestions based on input string.
@@ -1199,28 +1261,28 @@ function suggest(query) {
 	// trim query
 	query = query.replace(/^\s+|\s$/g, '').toLowerCase();
 	
+	var c = get("COUNT") || 0;
+	
 	// short-circuit if query is empty or if there is less than one element in storage
-	if (!query || !storage.length) {
+	if (!query || !c) {
 		return [];
 	}
 	
-	var
-		
-		// all words data (trie structure)
-		data = get("ALL"),
-		
-		// trie for data lookup
-		t = trie(data);
+	// on init, or if count has changed, create a trie object
+	if (c !== count) {
+		data = get("ALL");
+		trieobj = trie(data);
+	}
 	
 	// return first few trie matches
-	return t.match(query).slice(0,15);
+	return trieobj.match(query).slice(0,15);
 	
 }
 
 // exports
 tenk.suggest = suggest;	// short circuit if there are no matches
 
-})(window,window['10kse']);
+})(window['10kse']);
 /**
  * autocomplete.js - stripped-down implementation of autocomplete.
  */

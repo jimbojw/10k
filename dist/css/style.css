@@ -52,17 +52,43 @@ input[type=text] {
 	width: 100%;
 	border: 1px solid #aaa;
 }
+input[type=submit],
+input[type=button] {
+	border: 1px solid #aaa;
+	background-image: -moz-linear-gradient(
+		center bottom,
+		#ddd 32%,
+		#f3f3f3 72%
+	);
+	background-image: -webkit-gradient(
+		linear,
+		left bottom,
+		left top,
+		color-stop(0.32, #ddd),
+		color-stop(0.72, #f3f3f3)
+	);
+	-moz-border-radius: 3px;
+	border-radius: 2px;
+	padding: 0.25em 1em;
+	font-size: medium;
+}
 form p {
 	text-align: center;
 }
 
-.container > div {
+/* page sections or "panes" */
+.pane {
+	clear: both;
 	background: white;
 	border: 1px solid #aaa;
 	margin-bottom: 1em;
 	padding: 0 1em 1em;
 	-moz-border-radius: 8px;
 	border-radius: 8px;
+	display: none;
+}
+.pane.selected {
+	display: inherit;
 }
 
 ul {
@@ -99,6 +125,36 @@ li {
 	text-shadow: #333 1px 1px 1px;
 	text-decoration: none;
 }
+/**
+ * menu.css - css for menu system (navigation)
+ */
+nav ul {
+	margin: 0 1em;
+	padding: 0;
+	list-style-type: none;
+}
+nav li {
+	float: left;
+	margin: 0 0.6em;
+	padding: 0.25em 1em;
+	background: #ddd;
+	-moz-border-radius-topRight: 6px;
+	-moz-border-radius-topLeft: 6px;
+	border-top-right-radius: 6px;
+	border-top-left-radius: 6px;
+	border: 1px solid #aaa;
+	border-bottom: none;
+	color: #444;
+	cursor: pointer;
+}
+nav .selected {
+	color: #06c;
+	background: #fff;
+	z-index: 1;
+	position: relative;
+	top: 1px;
+}
+
 /**
  * autocomplete.css - styles relating to the autocomplete implementation.
  */
