@@ -141,3 +141,12 @@ li {
 	background: #ff0;
 	padding: 0.5em 1em;
 }
+
+/* about tab */
+.about img {
+	float: right;
+	padding: 0;
+	margin: 0;
+	position: relative;
+	top: -30px;
+}
