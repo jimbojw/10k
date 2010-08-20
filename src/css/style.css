@@ -57,6 +57,7 @@ form p {
 }
 
 .container > div {
+	clear: both;
 	background: white;
 	border: 1px solid #aaa;
 	margin-bottom: 1em;

@@ -1,0 +1,30 @@
+/**
+ * menu.css - css for menu system (navigation)
+ */
+nav ul {
+	margin: 0 1em;
+	padding: 0;
+	list-style-type: none;
+}
+nav li {
+	float: left;
+	margin: 0 0.6em;
+	padding: 0.25em 1em;
+	background: #ddd;
+	-moz-border-radius-topRight: 6px;
+	-moz-border-radius-topLeft: 6px;
+	border-top-right-radius: 6px;
+	border-top-left-radius: 6px;
+	border: 1px solid #aaa;
+	border-bottom: none;
+	color: #444;
+	cursor: pointer;
+}
+nav .selected {
+	color: #06c;
+	background: #fff;
+	z-index: 1;
+	position: relative;
+	top: 1px;
+}
+

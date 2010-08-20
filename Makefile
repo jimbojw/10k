@@ -24,6 +24,7 @@ JS_MIN = ${DIST_DIR}/js/script.min.js
 
 CSS_FILES = \
 	${SRC_DIR}/css/style.css\
+	${SRC_DIR}/css/menu.css\
 	${SRC_DIR}/css/autocomplete.css
 
 CSS_OUT = ${DIST_DIR}/css/style.css
