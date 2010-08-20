@@ -245,6 +245,9 @@ function autocomplete(input) {
 		
 		if ($li) {
 			
+			// user is using mouse, clear arrowspressed flag
+			arrowspressed = null;
+			
 			if ($selected) {
 				
 				if ($selected.get(0) !== $li.get(0)) {
