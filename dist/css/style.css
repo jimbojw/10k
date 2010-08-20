@@ -33,7 +33,6 @@ h1 {
 
 dt {
 	font-size: 1.1em;
-	margin-bottom: 0;
 }
 dd {
 	margin-left: 0;
@@ -74,6 +73,9 @@ input[type=button] {
 }
 .search form p {
 	text-align: center;
+}
+.results {
+	margin-top: 2em;
 }
 
 /* page sections or "panes" */

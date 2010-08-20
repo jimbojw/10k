@@ -1411,19 +1411,12 @@ function autocomplete(input) {
 		previous = '',
 		
 		// currently selected option
-		$selected = null,
-		
-		// timout for delayed reaction
-		timeout,
-		clear = window.clearTimeout;
+		$selected = null;
 	
 	/**
 	 * action to take when the user selects an option.
 	 */
 	function select() {
-		
-		clear(timeout);
-		timeout = null;
 		
 		if ($selected) {
 			
@@ -1536,24 +1529,13 @@ function autocomplete(input) {
 			
 			if (word.length) {
 				
-				if (timeout) {
-					clear(timeout);
+				// get suggestions and update choices
+				var suggestions = suggest(word);
+				if (suggestions && suggestions.length) {
+					update(suggestions, word);
+				} else {
+					hide();
 				}
-				
-				timeout = window.setTimeout(function(){
-					
-					clear(timeout);
-					timeout = null;
-					
-					// get suggestions and update choices
-					var suggestions = suggest(word);
-					if (suggestions && suggestions.length) {
-						update(suggestions, word);
-					} else {
-						hide();
-					}
-					
-				}, 100);
 				
 			} else {
 				
@@ -1632,7 +1614,7 @@ function autocomplete(input) {
 }
 
 // set up input box for autocompletion
-$('.search input').each(function(){
+$('.search input').eq(0).each(function(){
 	autocomplete(this);
 });
 
@@ -1658,7 +1640,10 @@ var
 	
 	// cached jquery results
 	$results = $('.results dl'),
-	$input = $('.search input').eq(0);
+	$input = $('.search input').eq(0),
+	
+	// previous query
+	previous;
 
 /**
  * search form behavior
@@ -1687,9 +1672,10 @@ function search() {
 		recordcache = {};
 	
 	// short-circuit if no terms were specified
-	if (!query) {
+	if (!query || query === previous) {
 		return;
 	}
+	previous = query;
 	
 	// collect matching document ids
 	for (i=0, l=terms.length; i<l; i++) {
@@ -1840,7 +1826,7 @@ function search() {
 // attach search action to form submission
 $('form').submit(function(e){
 	e.preventDefault();
-	setTimeout(search, 100);
+	setTimeout(search, 150);
 });
 
 // implement web search button
