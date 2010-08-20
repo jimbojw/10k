@@ -144,6 +144,11 @@ li {
 	background: #ff0;
 	padding: 0.5em 1em;
 }
+textarea {
+	width: 100%;
+	border: 1px solid #aaa;
+	height: 6em;
+}
 
 /* about tab */
 .about img {
