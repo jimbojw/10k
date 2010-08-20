@@ -56,7 +56,7 @@ YUIJAR = java -jar ${BUILD_DIR}/yuicompressor-2.4.2.jar
 all: jsbuild cssbuild imagebuild htmlbuild
 	@@echo "10k build complete."
 
-jsbuild: jscat jslint jsmin
+jsbuild: jscat jslint jsmin jscrushcat jscrushlint jscrushmin
 	@@echo "javascript build complete."
 
 cssbuild: csscat cssmin
@@ -90,13 +90,29 @@ ${JS_OUT}: init ${JS_FILES}
 
 jslint: ${JS_OUT}
 	@@echo "Checking javascript against JSLint..."
-	@@${RHINO} build/jslint-check.js
+	@@${RHINO} build/jslint-check.js ${JS_OUT}
 
 jsmin: ${JS_MIN}
 
 ${JS_MIN}: ${JS_OUT}
 	@@echo "Building" ${JS_MIN}
 	@@${MINJAR} --js ${JS_OUT} --warning_level QUIET > ${JS_MIN}
+
+jscrushcat: ${DIST_DIR} ${JS_CRUSH_OUT}
+
+${JS_CRUSH_OUT}: init ${JS_CRUSH_FILES}
+	@@echo "Building" ${JS_CRUSH_OUT}
+	@@cat ${JS_CRUSH_FILES} > ${JS_CRUSH_OUT};
+
+jscrushlint: ${JS_CRUSH_OUT}
+	@@echo "Checking javascript against JSLint..."
+	@@${RHINO} build/jslint-check.js ${JS_CRUSH_OUT}
+
+jscrushmin: ${JS_CRUSH_MIN}
+
+${JS_CRUSH_MIN}: ${JS_CRUSH_OUT}
+	@@echo "Building" ${JS_CRUSH_MIN}
+	@@${MINJAR} --js ${JS_CRUSH_OUT} --warning_level QUIET > ${JS_CRUSH_MIN}
 
 csscat: ${DIST_DIR} ${CSS_OUT}
 

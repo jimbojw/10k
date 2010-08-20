@@ -1,6 +1,8 @@
 load("build/jslint.js");
 
-var src = readFile("dist/js/script.js");
+var
+	file = arguments[0],
+	src = readFile(file);
 
 JSLINT(src, { evil: true, forin: true });
 
