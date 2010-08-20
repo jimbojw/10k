@@ -8,6 +8,9 @@ var
 	// storage api
 	get = tenk.get,
 	
+	// so-called stop words (uninteresting to search/ranking)
+	stop = tenk.stop,
+	
 	// maths
 	log = Math.log;
 
