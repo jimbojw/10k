@@ -47,7 +47,7 @@ INDEX_FILE = ${SRC_DIR}/index.html
 INDEX_OUT = ${DIST_DIR}/compressed/index.html
 
 CRUSH_FILE = ${SRC_DIR}/crush.html
-CRUSH_OUT = ${SRC_DIR}/final/index.html
+CRUSH_OUT = ${DIST_DIR}/final/index.html
 
 RHINO = java -jar ${BUILD_DIR}/js.jar
 MINJAR = java -jar ${BUILD_DIR}/google-compiler-20100514.jar
@@ -65,7 +65,7 @@ cssbuild: csscat cssmin
 imagebuild: htmlcontent ppmbuild pngconvert pngcrush
 	@@echo "image build complete."
 
-htmlbuild: htmlreplace
+htmlbuild: htmlreplace crushreplace
 	@@echo "html build complete."
 
 ${DIST_DIR}:
@@ -166,6 +166,16 @@ ${INDEX_OUT}: init ${INDEX_FILE}
 			script ${JS_MIN} >\
 		${INDEX_OUT}
 	@@echo "Compressed index size:" `du -b ${INDEX_OUT} | sed -e 's/\s.*//'`
+
+crushreplace: ${DIST_DIR} ${CRUSH_OUT}
+
+${CRUSH_OUT}: init ${CRUSH_FILE}
+	@@echo "Building" ${CRUSH_OUT}
+	@@cat ${CRUSH_FILE} | \
+		${RHINO} build/replace.js \
+			script ${JS_CRUSH_MIN} >\
+		${CRUSH_OUT}
+	@@echo "Final index size:" `du -b ${CRUSH_OUT} | sed -e 's/\s.*//'`
 
 clean:
 	@@echo "Removing Distribution directory:" ${DIST_DIR}
