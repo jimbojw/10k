@@ -6,6 +6,7 @@
 var
 	
 	// key codes
+	space = 32,
 	upkey = 38,
 	rightkey = 39,
 	downkey = 40,
@@ -122,6 +123,12 @@ function autocomplete(input) {
 		if (which === enterkey || which === rightkey) {
 			
 			select();
+			
+		} else if (which === space && $selected) {
+			
+			$input.val($input.val().replace(/\s+$/,''));
+			select();
+			$input.val($input.val() + ' ');
 			
 		} else if (which === esckey) {
 			
