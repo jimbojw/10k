@@ -436,7 +436,6 @@ function proximity(ids, terms, type, recordcache) {
 		
 	}
 	
-	console.dir(scores);
 	return scores;
 	
 }
