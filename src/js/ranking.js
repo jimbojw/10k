@@ -181,7 +181,7 @@ function bm25(ids, terms, type, recordcache) {
 		invlogcount = 1 / log(1 + count),
 		
 		// bm25 factors
-		bm25,
+		bm25score,
 		k1 = 1.2,
 		tf, // term frequency
 		idf, // inverse document frequency
@@ -229,7 +229,7 @@ function bm25(ids, terms, type, recordcache) {
 	
 	for (id in ids) {
 		
-		bm25 = 0;
+		bm25score = 0;
 		
 		for (i=0, l=terms.length; i<l; i++) {
 			
@@ -262,7 +262,7 @@ function bm25(ids, terms, type, recordcache) {
 					}
 					
 					if (tf) {
-						bm25 += tf * idf / (tf + k1);
+						bm25score += tf * idf / (tf + k1);
 					}
 				
 				}
@@ -270,7 +270,7 @@ function bm25(ids, terms, type, recordcache) {
 			}
 			
 			// add normalized score
-			scores[id] = 0.5 + bm25 * denom;
+			scores[id] = 0.5 + bm25score * denom;
 			
 		}
 		
