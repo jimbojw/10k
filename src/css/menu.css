@@ -4,6 +4,7 @@
 .nav ul {
 	margin: 0 1em;
 	padding: 0;
+	padding-top: 1px; /* fix for IE 9 */
 	list-style-type: none;
 }
 .nav li {
