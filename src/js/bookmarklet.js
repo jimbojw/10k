@@ -33,12 +33,17 @@ function bookmarklet(window,document,origin) {
 	}
 	
 	/* listen for script posted from origin and eval it */
-	window.addEventListener("message", function (event) {
+	function chainload(event) {
 		if (origin.substr(0, event.origin.length)===event.origin) {
 			tenk.scanner = new Function(event.data);
 			tenk.scanner();
 		}
-	}, false);
+	}
+	if (window.addEventListener) {
+		window.addEventListener("message", chainload, false);
+	} else {
+		window.attachEvent("onmessage", chainload);
+	}
 	
 	/* open iframe to origin and style it */
 	var
@@ -101,20 +106,23 @@ $('#add')
 /**
  * listen for incoming messages when in iframe mode
  */
-if (window !== window.top) {
+if (window.window !== window.top) {
 	if (document.location.hash === '#' + key) {
-		window.addEventListener("message", function(event) {
-		
+		$(window).bind('message', function(event) {
+			
+			// unwrap jquery wrapper
+			event = event.originalEvent || event;
+			
 			// serve script to anyone who requests it
 			if (event.data === "script") {
 				event.source.postMessage('(' + tenk.scanner + ')(window,document)', "*");
 				return;
 			}
-		
+			
 			// process index submission
 			tenk.indexer(JSON.parse(event.data));
-		
-		}, false);
+			
+		});
 	} else {
 		alert(
 			"Either your bookmarklet is out of date, or a malicious site \n" +

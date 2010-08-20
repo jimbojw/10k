@@ -31,7 +31,7 @@ function scanner(window,document,undefined) {
 	 * utility function for getting an element's text content.
 	 */
 	function gettext(elem) {
-		return elem.innerText || elem.textContent;
+		return elem.textContent !== undefined ? elem.textContent : elem.innerText;
 	}
 	
 	// concepts borrowed from readability, and adapted to search content scanning
@@ -142,7 +142,7 @@ function scanner(window,document,undefined) {
 	best = best || document.body;
 	
 	// get selection - best clue as to the important content on the page
-	var selection = document.getSelection() || '';
+	var selection = (document.getSelection && document.getSelection()) + '';
 	
 	// prioritize headings over other content
 	var
