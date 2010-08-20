@@ -72,27 +72,24 @@ function search() {
 	var
 		
 		// references to library functions
-		wordcount = tenk.wordcount,
 		normalize = tenk.normalize,
 		topdistance = tenk.topdistance,
+		bm25 = tenk.bm25,
 		
 		// scoring
 		rankings = [
 			
-			// count the number of terms in the query which appear at least once
-			[1.0, normalize(ids)],
-			
-			// count number of times terms appear in the documents
-			[1.0, normalize(wordcount(ids, terms, "s", recordcache))],
-			[1.0, normalize(wordcount(ids, terms, "t", recordcache))],
-			[1.0, normalize(wordcount(ids, terms, "p", recordcache))],
-			[1.0, normalize(wordcount(ids, terms, "c", recordcache))],
-			
-			// count number of times terms appear in the documents
+			// count the smallest distance between a matching term and the beginning of the document
 			[1.0, normalize(topdistance(ids, terms, "s", recordcache), -1)],
 			[1.0, normalize(topdistance(ids, terms, "t", recordcache), -1)],
 			[1.0, normalize(topdistance(ids, terms, "p", recordcache), -1)],
-			[1.0, normalize(topdistance(ids, terms, "c", recordcache), -1)]
+			[1.0, normalize(topdistance(ids, terms, "c", recordcache), -1)],
+			
+			// bm25 score
+			[2.5, normalize(bm25(ids, terms, "s", recordcache))],
+			[2.0, normalize(bm25(ids, terms, "t", recordcache))],
+			[1.5, normalize(bm25(ids, terms, "p", recordcache))],
+			[1.0, normalize(bm25(ids, terms, "c", recordcache))]
 			
 		],
 		

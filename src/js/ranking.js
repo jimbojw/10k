@@ -63,68 +63,6 @@ function normalize(scores, multiplier, fallback) {
 }
 
 /**
- * count how many times the terms appear in the document
- * @param {object} ids Hash in which keys are document ids (values unimportant).
- * @param {array} terms List of search terms provided.
- * @param {string} type The type of content to count ('s'election, 't'itle, 'p'riority, or 'c'ontent).
- * @param {object} recordcache Hash mapping words to their localStorage values.
- * @return {object} Hash of id/score pairs.
- */
-function wordcount(ids, terms, type, recordcache) {
-	
-	if (!recordcache) {
-		recordcache = {};
-	}
-	
-	var
-		scores = {},
-		term,
-		record,
-		id,
-		entry,
-		positions;
-	
-	for (var i=0, l=terms.length; i<l; i++) {
-		
-		term = terms[i];
-		if (term.length > 2 && !stop[term]) {
-			
-			record = recordcache[term];
-			
-			if (record === undefined) {
-				record = recordcache[term] = get("W-" + term);
-			}
-			
-			if (record) {
-				
-				for (id in ids) {
-				
-					entry = record[id];
-					if (entry) {
-					
-						positions = entry[type];
-						if (positions) {
-							if (scores[id] === undefined) {
-								scores[id] = 0;
-							}
-							scores[id] += (+positions.length);
-						}
-					
-					}
-				
-				}
-			
-			}
-			
-		}
-		
-	}
-	
-	return scores;
-	
-}
-
-/**
  * how close is the closest word to the top of the content
  * @param {object} ids Hash in which keys are document ids (values unimportant).
  * @param {array} terms List of search terms provided.
@@ -344,7 +282,6 @@ function bm25(ids, terms, type, recordcache) {
  
 
 // exports
-tenk.wordcount = wordcount;
 tenk.normalize = normalize;
 tenk.topdistance = topdistance;
 tenk.bm25 = bm25;
