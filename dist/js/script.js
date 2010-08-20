@@ -883,7 +883,7 @@ if (id > 0) {
 		.appendTo(
 			$('.allpages')
 				.find('div')
-					.empty()
+					.html('<p>Page count: ' + id + '</p>')
 		);
 	
 	while (id > 0) {

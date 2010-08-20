@@ -157,6 +157,11 @@ li {
 	margin: 1em;
 }
 
+/* allpages tab */
+.allpages p {
+	margin: 1em;
+}
+
 /**
  * menu.css - css for menu system (navigation)
  */
