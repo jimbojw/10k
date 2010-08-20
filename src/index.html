@@ -15,14 +15,14 @@
 <h1><span>10k personal search engine<span></h1>
 <nav>
 <ul>
-<li>welcome</li>
-<li>search</li>
-<li>all pages</li>
-<li>preferences</li>
-<li>about</li>
+<li class="welcome">welcome</li>
+<li class="search">search</li>
+<li class="allpages">all pages</li>
+<li class="prefs">preferences</li>
+<li class="about">about</li>
 </ul>
 </nav>
-<div class="search">
+<div class="search pane">
 <div>
 <h2><span>Search</span></h2>
 <form>
@@ -35,7 +35,7 @@
 </div>
 <div class="results"><dl></dl></div>
 </div>
-<div class="bookmarklet">
+<div class="welcome pane">
 <h2><span>Welcome</span></h2>
 <p>The 'add' button below is a <a href="http://en.wikipedia.org/wiki/Bookmarklet" title="bookmarklet">bookmarklet</a>.</p>
 <ol>
@@ -45,12 +45,16 @@
 </ol>
 <p><a href="" title="Add to search engine" id="add"><span>add</span></a></p>
 </div>
-<div class="entries">
+<div class="allpages pane">
 <h2><span>All pages</span></h2>
 <div><p>none yet :/</p></div>
 </div>
-<div class="prefs">
+<div class="prefs pane">
 <h2><span>Preferences</span></h2>
+<p>TBD</p>
+</div>
+<div class="about pane">
+<h2><span>About</span></h2>
 <p>TBD</p>
 </div>
 </div>
@@ -58,6 +62,7 @@
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 <!--script-->
 <script type="text/javascript" src="js/intro.js"></script>
+<script type="text/javascript" src="js/menu.js"></script>
 <script type="text/javascript" src="js/trie.js"></script>
 <script type="text/javascript" src="js/scanner.js"></script>
 <script type="text/javascript" src="js/indexer.js"></script>

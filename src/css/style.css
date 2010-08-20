@@ -76,7 +76,8 @@ form p {
 	text-align: center;
 }
 
-.container > div {
+/* page sections or "panes" */
+.pane {
 	clear: both;
 	background: white;
 	border: 1px solid #aaa;
@@ -84,6 +85,10 @@ form p {
 	padding: 0 1em 1em;
 	-moz-border-radius: 8px;
 	border-radius: 8px;
+	display: none;
+}
+.pane.selected {
+	display: inherit;
 }
 
 ul {
