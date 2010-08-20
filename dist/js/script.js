@@ -910,7 +910,10 @@ if (id > 0) {
 var
 	
 	// storage api
-	get = tenk.get;
+	get = tenk.get,
+	
+	// maths
+	log = Math.log;
 
 /**
  * normalize a set of scores.
@@ -961,68 +964,6 @@ function normalize(scores, multiplier, fallback) {
 	}
 	
 	return normalized;
-}
-
-/**
- * count how many times the terms appear in the document
- * @param {object} ids Hash in which keys are document ids (values unimportant).
- * @param {array} terms List of search terms provided.
- * @param {string} type The type of content to count ('s'election, 't'itle, 'p'riority, or 'c'ontent).
- * @param {object} recordcache Hash mapping words to their localStorage values.
- * @return {object} Hash of id/score pairs.
- */
-function wordcount(ids, terms, type, recordcache) {
-	
-	if (!recordcache) {
-		recordcache = {};
-	}
-	
-	var
-		scores = {},
-		term,
-		record,
-		id,
-		entry,
-		positions;
-	
-	for (var i=0, l=terms.length; i<l; i++) {
-		
-		term = terms[i];
-		if (term.length > 2 && !stop[term]) {
-			
-			record = recordcache[term];
-			
-			if (record === undefined) {
-				record = recordcache[term] = get("W-" + term);
-			}
-			
-			if (record) {
-				
-				for (id in ids) {
-				
-					entry = record[id];
-					if (entry) {
-					
-						positions = entry[type];
-						if (positions) {
-							if (scores[id] === undefined) {
-								scores[id] = 0;
-							}
-							scores[id] += (+positions.length);
-						}
-					
-					}
-				
-				}
-			
-			}
-			
-		}
-		
-	}
-	
-	return scores;
-	
 }
 
 /**
@@ -1095,10 +1036,159 @@ function topdistance(ids, terms, type, recordcache) {
 	
 }
 
+/**
+ * implementation of sphinx's modified bm25 algorithm.
+ * @param {object} ids Hash in which keys are document ids (values unimportant).
+ * @param {array} terms List of search terms provided.
+ * @param {string} type The type of content to count ('s'election, 't'itle, 'p'riority, or 'c'ontent).
+ * @param {object} recordcache Hash mapping words to their localStorage values.
+ * @return {object} Hash of id/score pairs.
+ */
+function bm25(ids, terms, type, recordcache) {
+	
+	/* sphinx pseudo code
+	 * ref: http://sphinxsearch.com/blog/2010/08/17/how-sphinx-relevance-ranking-works/
+	BM25 = 0
+	foreach ( keyword in matching_keywords )
+	{
+		n = total_matching_documents ( keyword )
+		N = total_documents_in_collection
+		k1 = 1.2
+		 
+		TF = current_document_occurrence_count ( keyword )
+		IDF = log((N-n+1)/n) / log(1+N)
+		BM25 = BM25 + TF*IDF/(TF+k1)
+	}
+	
+	// normalize to 0..1 range
+	BM25 = 0.5 + BM25 / ( 2*num_keywords ( query ) )
+	*/
+	
+	if (!recordcache) {
+		recordcache = {};
+	}
+	
+	var
+		scores = {},
+		term,
+		record,
+		id,
+		entry,
+		positions,
+		low,
+		
+		// count number of matching documents for each term (term/count)
+		termcount = {},
+		
+		// count of all documents
+		count = get("COUNT"),
+		invlogcount = 1 / log(1 + count),
+		
+		// bm25 factors
+		bm25score,
+		k1 = 1.2,
+		tf, // term frequency
+		idf, // inverse document frequency
+		denom = 1 / (2 * terms.length), // normalization denominator
+		
+		// iteration vars
+		i,
+		l;
+	
+	// count matching documents
+	for (id in ids) {
+		
+		for (i=0, l=terms.length; i<l; i++) {
+			
+			term = terms[i];
+			if (term.length > 2 && !stop[term]) {
+				
+				record = recordcache[term];
+				
+				if (record === undefined) {
+					record = recordcache[term] = get("W-" + term);
+				}
+				
+				if (record) {
+					
+					entry = record[id];
+					if (entry) {
+						
+						positions = entry[type];
+						if (positions) {
+							
+							termcount[term] = (termcount[term] || 0) + 1;
+							
+						}
+						
+					}
+					
+				}
+				
+			}
+			
+		}
+		
+	}
+	
+	for (id in ids) {
+		
+		bm25score = 0;
+		
+		for (i=0, l=terms.length; i<l; i++) {
+			
+			if (termcount[term]) {
+				
+				// calculate idf (same for all these matching docs for all terms)
+				idf = log((count - termcount[term] + 1) / termcount[term]) * invlogcount;
+				
+				term = terms[i];
+				if (term.length > 2 && !stop[term]) {
+					
+					tf = 0;
+					
+					record = recordcache[term];
+					
+					if (record) {
+						
+						entry = record[id];
+						if (entry) {
+							
+							positions = entry[type];
+							if (positions) {
+								
+								tf = positions.length;
+								
+							}
+							
+						}
+						
+					}
+					
+					if (tf) {
+						bm25score += tf * idf / (tf + k1);
+					}
+				
+				}
+			
+			}
+			
+			// add normalized score
+			scores[id] = 0.5 + bm25score * denom;
+			
+		}
+		
+	}
+	
+	return scores;
+	
+}
+ 
+
 // exports
-tenk.wordcount = wordcount;
 tenk.normalize = normalize;
 tenk.topdistance = topdistance;
+tenk.bm25 = bm25;
 
 })(window['10kse']);
 
@@ -1362,6 +1452,7 @@ tenk.suggest = suggest;	// short circuit if there are no matches
 var
 	
 	// key codes
+	space = 32,
 	upkey = 38,
 	rightkey = 39,
 	downkey = 40,
@@ -1411,7 +1502,10 @@ function autocomplete(input) {
 		previous = '',
 		
 		// currently selected option
-		$selected = null;
+		$selected = null,
+		
+		// have the arrow keys been pressed since the last select()?
+		arrowspressed;
 	
 	/**
 	 * action to take when the user selects an option.
@@ -1429,6 +1523,8 @@ function autocomplete(input) {
 			
 			$selected.removeClass(selectedClass);
 			$selected = null;
+			
+			arrowspressed = null;
 			
 		}
 		
@@ -1479,11 +1575,19 @@ function autocomplete(input) {
 			
 			select();
 			
+		} else if (which === space && $selected && arrowspressed) {
+			
+			$input.val($input.val().replace(/\s+$/,''));
+			select();
+			$input.val($input.val() + ' ');
+			
 		} else if (which === esckey) {
 			
 			hide();
 			
 		} else if (which === upkey || which === downkey) {
+			
+			arrowspressed = true;
 			
 			if ($selected) {
 				
@@ -1586,6 +1690,9 @@ function autocomplete(input) {
 		var $li = targetli(e.target);
 		
 		if ($li) {
+			
+			// user is using mouse, clear arrowspressed flag
+			arrowspressed = null;
 			
 			if ($selected) {
 				
@@ -1696,27 +1803,24 @@ function search() {
 	var
 		
 		// references to library functions
-		wordcount = tenk.wordcount,
 		normalize = tenk.normalize,
 		topdistance = tenk.topdistance,
+		bm25 = tenk.bm25,
 		
 		// scoring
 		rankings = [
 			
-			// count the number of terms in the query which appear at least once
-			[1.0, normalize(ids)],
-			
-			// count number of times terms appear in the documents
-			[1.0, normalize(wordcount(ids, terms, "s", recordcache))],
-			[1.0, normalize(wordcount(ids, terms, "t", recordcache))],
-			[1.0, normalize(wordcount(ids, terms, "p", recordcache))],
-			[1.0, normalize(wordcount(ids, terms, "c", recordcache))],
-			
-			// count number of times terms appear in the documents
+			// count the smallest distance between a matching term and the beginning of the document
 			[1.0, normalize(topdistance(ids, terms, "s", recordcache), -1)],
 			[1.0, normalize(topdistance(ids, terms, "t", recordcache), -1)],
 			[1.0, normalize(topdistance(ids, terms, "p", recordcache), -1)],
-			[1.0, normalize(topdistance(ids, terms, "c", recordcache), -1)]
+			[1.0, normalize(topdistance(ids, terms, "c", recordcache), -1)],
+			
+			// bm25 score
+			[2.5, normalize(bm25(ids, terms, "s", recordcache))],
+			[2.0, normalize(bm25(ids, terms, "t", recordcache))],
+			[1.5, normalize(bm25(ids, terms, "p", recordcache))],
+			[1.0, normalize(bm25(ids, terms, "c", recordcache))]
 			
 		],
 		
