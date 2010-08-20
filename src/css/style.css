@@ -52,6 +52,26 @@ input[type=text] {
 	width: 100%;
 	border: 1px solid #aaa;
 }
+input[type=submit],
+input[type=button] {
+	border: 1px solid #aaa;
+	background-image: -moz-linear-gradient(
+		center bottom,
+		#ddd 32%,
+		#f3f3f3 72%
+	);
+	background-image: -webkit-gradient(
+		linear,
+		left bottom,
+		left top,
+		color-stop(0.32, #ddd),
+		color-stop(0.72, #f3f3f3)
+	);
+	-moz-border-radius: 3px;
+	border-radius: 2px;
+	padding: 0.25em 1em;
+	font-size: medium;
+}
 form p {
 	text-align: center;
 }
