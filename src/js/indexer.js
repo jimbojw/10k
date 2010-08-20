@@ -81,7 +81,7 @@ function extract(text) {
 function update(id, type, text, allwords) {
 	
 	// short-circuit of nothing of value has been sent
-	text = '' + text;
+	text = text || '';
 	if (!text || !(/[a-z]/i).test(text)) {
 		return;
 	}
