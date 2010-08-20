@@ -185,15 +185,15 @@ function indexer(data) {
 	
 	// add all words to trie for autocompletion
 	var
-		data = get("ALL") || {},
-		t = trie(data),
+		d = get("ALL") || {},
+		t = trie(d),
 		word;
 	
 	for (word in allwords) {
 		t.add(word);
 	}
 	
-	set("ALL", data);
+	set("ALL", d);
 	
 }
 
