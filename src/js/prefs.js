@@ -12,6 +12,7 @@ var
 	// cached jquery results
 	$prefs = $('.prefs.pane'),
 	$input = $prefs.find('input').eq(0),
+	$saved = $prefs.find('.saved'),
 	
 	// prefered web search
 	s = get("S") || '';
@@ -37,7 +38,16 @@ $prefs.find('form').submit(function(e){
 	s = $input.val();
 	set("S", s);
 	
-	alert('Preferences saved successfully!')
+	$saved.css({
+		visibility: '',
+		opacity: 1
+	});
+	
+	setTimeout(function(){
+		$saved.animate({
+			opacity: 0
+		}, 'slow');
+	}, 1000);
 	
 });
 

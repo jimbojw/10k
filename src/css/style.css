@@ -137,3 +137,7 @@ li {
 	display: inline;
 	padding: 0 2em;
 }
+.saved {
+	background: #ff0;
+	padding: 0.5em 1em;
+}
