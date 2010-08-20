@@ -29,7 +29,7 @@ for (var i=0, l=stopwords.length; i<l; i++) {
  * get an item from localStorage.
  */
 function get(key) {
-	var value = storage.getItem(key);
+	var value = storage.getItem('10kse-' + key);
 	return value ? parse(value) : value;
 }
 
@@ -37,7 +37,7 @@ function get(key) {
  * put an item into localStorage
  */
 function set(key, value) {
-	return storage.setItem(key, stringify(value));
+	return storage.setItem('10kse-' + key, stringify(value));
 }
 
 /**
