@@ -270,6 +270,9 @@ function autocomplete(input) {
 		.mouseover(mouseover)
 		.click(select);
 	
+	// clear the autocompleter when clicking anywhere else
+	$('body').click(hide);
+	
 }
 
 // set up input box for autocompletion
