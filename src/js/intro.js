@@ -3,6 +3,17 @@
  */
 (function(window){
 
+var p = window.document.location.protocol;
+if (p.substr(0,4) !== 'http') {
+	
+	alert(
+		"Dear hacker, the bookmarklet will only work if \n" +
+		"the target page is in the same zone as this page.\n\n" +
+		"That means you'll have to serve this page over \n" +
+		"http, even for development.  Sorry!"
+	);
+	
+}
 
 var
 	
