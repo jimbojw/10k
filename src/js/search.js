@@ -19,7 +19,7 @@ var
 	$input = $('.search input').eq(0),
 	
 	// previous query
-	previous
+	previous,
 	
 	// slide speed
 	speed = 'fast';
