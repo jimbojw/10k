@@ -80,6 +80,8 @@ function autocomplete(input) {
 			
 			arrowspressed = null;
 			
+			tenk.search();
+			
 		}
 		
 		hide();
