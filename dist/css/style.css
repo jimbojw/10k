@@ -46,7 +46,7 @@ a, a:visited {
 	color: #06c;
 }
 
-/* search */
+/* forms */
 input[type=text] {
 	width: 100%;
 	border: 1px solid #aaa;
@@ -70,6 +70,11 @@ input[type=button] {
 	border-radius: 2px;
 	padding: 0.25em 1em;
 	font-size: medium;
+}
+
+/* search */
+.search input[type=text] {
+	font-size: 1.3em;
 }
 .search form p {
 	text-align: center;
@@ -114,15 +119,15 @@ li {
 	text-align: center;
 	background-image: -moz-linear-gradient(
 		center bottom,
-		#c92200 32%,
-		#ff3300 72%
+		#22b900 32%,
+		#33e800 72%
 	);
 	background-image: -webkit-gradient(
 		linear,
 		left bottom,
 		left top,
-		color-stop(0.32, #c92200),
-		color-stop(0.72, #ff3300)
+		color-stop(0.32, #22b900),
+		color-stop(0.72, #33e800)
 	);
 	-moz-border-radius: 8px;
 	border-radius: 8px;
@@ -223,6 +228,7 @@ textarea {
 .auto li {
 	margin: 0;
 	padding: 0.25em 0.5em;
+	font-size: 1.2em;
 }
 .auto .selected {
 	background: #f0f0f0;
