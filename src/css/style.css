@@ -46,7 +46,7 @@ a, a:visited {
 	color: #06c;
 }
 
-/* search */
+/* forms */
 input[type=text] {
 	width: 100%;
 	border: 1px solid #aaa;
@@ -70,6 +70,11 @@ input[type=button] {
 	border-radius: 2px;
 	padding: 0.25em 1em;
 	font-size: medium;
+}
+
+/* search */
+.search input[type=text] {
+	font-size: 1.5em;
 }
 .search form p {
 	text-align: center;
