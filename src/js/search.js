@@ -19,7 +19,10 @@ var
 	$input = $('.search input').eq(0),
 	
 	// previous query
-	previous;
+	previous
+	
+	// slide speed
+	speed = 'fast';
 
 /**
  * search form behavior
@@ -76,14 +79,14 @@ function search() {
 	// short-circuit with "no results" if there were no matches
 	if (!any) {
 		
-		$results.slideUp('slow', function(){
+		$results.slideUp(speed, function(){
 			
 			$results.html(
 				"<dt>Sorry, no pages were found to match your query. :/</dt>" +
 				"<dd><p>You should probably try searching for something else.</p></dd>"
 			);
 			
-			$results.slideDown('slow');
+			$results.slideDown(speed);
 			
 		});
 		
@@ -178,7 +181,7 @@ function search() {
 		last = null;
 	
 	// display search results in rank order, highlighted accordingly
-	$results.slideUp('slow', function(){
+	$results.slideUp(speed, function(){
 		
 		$results.empty();
 		
@@ -219,7 +222,7 @@ function search() {
 		
 		}
 		
-		$results.slideDown('slow');
+		$results.slideDown(speed);
 		
 	});
 }
