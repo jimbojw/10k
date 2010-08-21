@@ -114,15 +114,15 @@ li {
 	text-align: center;
 	background-image: -moz-linear-gradient(
 		center bottom,
-		#c92200 32%,
-		#ff3300 72%
+		#22b900 32%,
+		#33e800 72%
 	);
 	background-image: -webkit-gradient(
 		linear,
 		left bottom,
 		left top,
-		color-stop(0.32, #c92200),
-		color-stop(0.72, #ff3300)
+		color-stop(0.32, #22b900),
+		color-stop(0.72, #33e800)
 	);
 	-moz-border-radius: 8px;
 	border-radius: 8px;
