@@ -39,7 +39,7 @@ function suggest(query) {
 	}
 	
 	// return first few trie matches
-	return trieobj.match(query).slice(0,15);
+	return trieobj.match(query).slice(0,10);
 	
 }
 
