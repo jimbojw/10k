@@ -248,5 +248,8 @@ $(function(){
 	$input.focus();
 });
 
+// exports
+tenk.search = search;
+
 })(window,document,window['10kse'],jQuery);
 
