@@ -203,15 +203,15 @@ function scanner(window,document,undefined) {
 	
 	// look for a worth-while icon
 	var
-		links = document.getElementsByTagName('link'),
+		headlinks = document.getElementsByTagName('link'),
 		loc = document.location,
 		icon = loc.protocol + '//' + loc.host + '/favicon.ico',
-		link;
+		headlink;
 	
-	for (i=0, l=links.length; i<l; i++) {
-		link = links[i];
-		if ((/icon/).test(link.rel) && link.href) {
-			icon = link.href;
+	for (i=0, l=headlinks.length; i<l; i++) {
+		headlink = headlinks[i];
+		if ((/icon/).test(headlink.rel) && headlink.href) {
+			icon = headlink.href;
 			break;
 		}
 	}

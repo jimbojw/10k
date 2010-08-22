@@ -25,6 +25,13 @@ var
 	speed = 'fast';
 
 /**
+ * utility callback for setting the size of an icon image.
+ */
+function iconsize() {
+	this.width = this.height = 16;
+}
+
+/**
  * search form behavior
  */
 function search() { 
@@ -211,9 +218,7 @@ function search() {
 							.end()
 							.find('img')
 								.attr('src', doc.icon || url.substr(0,url.indexOf('/',9)) + '/favicon.ico')
-								.load(function(e){
-									this.width = this.height = 16;
-								})
+								.load(iconsize)
 							.end(),
 						$('<dd><p></p></dd>')
 							.find('p')
