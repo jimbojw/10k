@@ -149,7 +149,8 @@ function indexer(data) {
 			set("URL-" + data.url, {
 				id: id,
 				text: data.content,
-				title: data.title
+				title: data.title,
+				icon: data.icon
 			});
 		}
 		
@@ -169,7 +170,8 @@ function indexer(data) {
 		set("URL-" + data.url, {
 			id: id,
 			text: data.content,
-			title: data.title
+			title: data.title,
+			icon: data.icon
 		});
 		
 	}
