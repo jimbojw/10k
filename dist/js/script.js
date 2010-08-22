@@ -545,8 +545,24 @@ function scanner(window,document,undefined) {
 		}
 	}
 	
+	// look for a worth-while icon
+	var
+		headlinks = document.getElementsByTagName('link'),
+		loc = document.location,
+		icon = loc.protocol + '//' + loc.host + '/favicon.ico',
+		headlink;
+	
+	for (i=0, l=headlinks.length; i<l; i++) {
+		headlink = headlinks[i];
+		if ((/icon/).test(headlink.rel) && headlink.href) {
+			icon = headlink.href;
+			break;
+		}
+	}
+	
 	// send extracted data off for indexing
 	window['10kse'].iframe.contentWindow.postMessage(JSON.stringify({
+		icon: icon,
 		url: document.location.href,
 		selection: selection,
 		title: document.title,
@@ -712,7 +728,8 @@ function indexer(data) {
 			set("URL-" + data.url, {
 				id: id,
 				text: data.content,
-				title: data.title
+				title: data.title,
+				icon: data.icon
 			});
 		}
 		
@@ -732,7 +749,8 @@ function indexer(data) {
 		set("URL-" + data.url, {
 			id: id,
 			text: data.content,
-			title: data.title
+			title: data.title,
+			icon: data.icon
 		});
 		
 	}
@@ -1964,6 +1982,13 @@ var
 	speed = 'fast';
 
 /**
+ * utility callback for setting the size of an icon image.
+ */
+function iconsize() {
+	this.width = this.height = 16;
+}
+
+/**
  * search form behavior
  */
 function search() { 
@@ -2142,11 +2167,15 @@ function search() {
 						text = doc.text;
 					
 					$results.append(
-						$('<dt><a></a></dt>')
+						$('<dt><img /> <a></a></dt>')
 							.find('a')
 								.attr('href', url)
 								.attr('title', doc.title)
 								.html(highlight(doc.title, terms, false))
+							.end()
+							.find('img')
+								.attr('src', doc.icon || url.substr(0,url.indexOf('/',9)) + '/favicon.ico')
+								.load(iconsize)
 							.end(),
 						$('<dd><p></p></dd>')
 							.find('p')
