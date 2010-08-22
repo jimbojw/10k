@@ -203,11 +203,17 @@ function search() {
 						text = doc.text;
 					
 					$results.append(
-						$('<dt><a></a></dt>')
+						$('<dt><img /> <a></a></dt>')
 							.find('a')
 								.attr('href', url)
 								.attr('title', doc.title)
 								.html(highlight(doc.title, terms, false))
+							.end()
+							.find('img')
+								.attr('src', doc.icon || url.substr(0,url.indexOf('/',9)) + '/favicon.ico')
+								.load(function(e){
+									this.width = this.height = 16;
+								})
 							.end(),
 						$('<dd><p></p></dd>')
 							.find('p')
