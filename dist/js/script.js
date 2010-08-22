@@ -2167,7 +2167,7 @@ function search() {
 						text = doc.text;
 					
 					$results.append(
-						$('<dt><img /> <a></a></dt>')
+						$('<dt><img width="0" height="0" /> <a></a></dt>')
 							.find('a')
 								.attr('href', url)
 								.attr('title', doc.title)
