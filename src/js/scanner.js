@@ -201,8 +201,24 @@ function scanner(window,document,undefined) {
 		}
 	}
 	
+	// look for a worth-while icon
+	var
+		links = document.getElementsByTagName('link'),
+		loc = document.location,
+		icon = loc.protocol + '//' + loc.host + '/favicon.ico',
+		link;
+	
+	for (i=0, l=links.length; i<l; i++) {
+		link = links[i];
+		if ((/icon/).test(link.rel) && link.href) {
+			icon = link.href;
+			break;
+		}
+	}
+	
 	// send extracted data off for indexing
 	window['10kse'].iframe.contentWindow.postMessage(JSON.stringify({
+		icon: icon,
 		url: document.location.href,
 		selection: selection,
 		title: document.title,
