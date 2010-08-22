@@ -30,6 +30,9 @@ h1 {
 	border-radius: 8px;
 	text-shadow: #333 1px 1px 1px;
 }
+h1 i {
+	font-family: 'Helvetica Neue', Arial, 'Liberation Sans', FreeSans, sans-serif;
+}
 
 dt {
 	font-size: 1.1em;
