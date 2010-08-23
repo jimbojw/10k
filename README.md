@@ -1,6 +1,6 @@
 ## 10k personal search engine (10kse)
 
-My submission for the [10k apart contest](http://10k.aneventapart.com/).
+[My submission](http://10k.aneventapart.com/Entry/251) for the [10k apart contest](http://10k.aneventapart.com/).
 
 ### developed by
 
