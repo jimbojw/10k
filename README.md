@@ -1,7 +1,10 @@
 ## 10k personal search engine (10kse)
 
 <div style="float:right">
-![Welcome tab](http://github.com/jimbojw/10k/raw/master/screenshots/welcome.png)
+<h3>Screen shots</h3>
+<div><img src="http://github.com/jimbojw/10k/raw/master/screenshots/welcome.png" /></div>
+<div><img src="http://github.com/jimbojw/10k/raw/master/screenshots/autocomplete.png" /></div>
+<div><img src="http://github.com/jimbojw/10k/raw/master/screenshots/search.png" /></div>
 </div>
 
 [My submission](http://10k.aneventapart.com/Entry/251) for the [10k apart contest](http://10k.aneventapart.com/).
