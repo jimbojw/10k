@@ -47,6 +47,11 @@ DATA_PNG = ${DIST_DIR}/final/data.png
 INDEX_FILE = ${SRC_DIR}/index.html
 INDEX_OUT = ${DIST_DIR}/compressed/index.html
 
+ICON_FILE = ${SRC_DIR}/image/icon.png
+ICON_OUT = ${DIST_DIR}/final/icon.png
+
+FINAL_OUT = ${DIST_DIR}/final/out.tmp
+
 CRUSH_FILE = ${SRC_DIR}/crush.html
 CRUSH_OUT = ${DIST_DIR}/final/index.html
 
@@ -54,7 +59,7 @@ RHINO = java -jar ${BUILD_DIR}/js.jar
 MINJAR = java -jar ${BUILD_DIR}/google-compiler-20100514.jar
 YUIJAR = java -jar ${BUILD_DIR}/yuicompressor-2.4.2.jar
 
-all: jsbuild cssbuild imagebuild htmlbuild
+all: jsbuild cssbuild imagebuild iconbuild htmlbuild finalsize
 	@@echo "10k build complete."
 
 jsbuild: jscat jslint jsmin jscrushcat jscrushlint jscrushmin
@@ -65,6 +70,9 @@ cssbuild: csscat cssmin
 
 imagebuild: htmlcontent ppmbuild pngconvert pngcrush
 	@@echo "image build complete."
+
+iconbuild: iconcrush
+	@@echo "icon build complete."
 
 htmlbuild: htmlreplace crushreplace
 	@@echo "html build complete."
@@ -157,6 +165,13 @@ ${DATA_PNG}: ${IMAGE_PNG}
 	@@pngcrush -q ${IMAGE_PNG} ${DATA_PNG}
 	@@echo "Crushed png size:" `du -b ${DATA_PNG} | sed -e 's/\s.*//'`
 
+iconcrush: ${DIST_DIR} ${ICON_OUT}
+
+${ICON_OUT}: init ${ICON_FILE}
+	@@echo "Building" ${ICON_OUT}
+	@@pngcrush -q ${ICON_FILE} ${ICON_OUT}
+	@@echo "Icon size:" `du -b ${ICON_OUT} | sed -e 's/\s.*//'`
+
 htmlreplace: ${DIST_DIR} ${INDEX_OUT}
 
 ${INDEX_OUT}: init ${INDEX_FILE}
@@ -177,6 +192,14 @@ ${CRUSH_OUT}: init ${CRUSH_FILE}
 			script ${JS_CRUSH_MIN} >\
 		${CRUSH_OUT}
 	@@echo "Final index size:" `du -b ${CRUSH_OUT} | sed -e 's/\s.*//'`
+
+finalsize: ${DIST_DIR} ${FINAL_OUT}
+
+${FINAL_OUT}: init
+	@@echo "Building" ${FINAL_OUT}
+	@@cat ${CRUSH_OUT} ${DATA_PNG} ${ICON_OUT} > ${FINAL_OUT}
+	@@echo "Total size:" `du -b ${FINAL_OUT} | sed -e 's/\s.*//'`
+	@@rm -f ${FINAL_OUT}
 
 clean:
 	@@echo "Removing Distribution directory:" ${DIST_DIR}
