@@ -1,15 +1,14 @@
 ## 10k personal search engine (10kse)
 
-<div class="new-comments right">
-<div class="comments-wrapper corner">
+<div class="comments-wrapper new-comments right">
+<h3>screenshots</h3>
 <p>A few examples of what the app looks like running.</p>
 <div class="comment"><img src="http://github.com/jimbojw/10k/raw/master/screenshots/welcome.png" /></div>
-<h3>welcome</h3>
+<p><b>welcome</b></p>
 <div class="comment"><img src="http://github.com/jimbojw/10k/raw/master/screenshots/autocomplete.png" /></div>
-<h3>autocompletion</h3>
+<p><b>autocompletion</b></p>
 <div class="comment"><img src="http://github.com/jimbojw/10k/raw/master/screenshots/search.png" /></div>
-<h3>search results</h3>
-</div>
+<p><b>search results</b></p>
 </div>
 
 [My submission](http://10k.aneventapart.com/Entry/251) for the [10k apart contest](http://10k.aneventapart.com/).
