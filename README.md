@@ -1,11 +1,20 @@
-## 10k personal search engine (10kse)
-
 <div class="new-comments right">
 <h3>Screen shots</h3>
-<div class="notification comment"><img src="http://github.com/jimbojw/10k/raw/master/screenshots/welcome.png" /></div>
-<div class="notification comment"><img src="http://github.com/jimbojw/10k/raw/master/screenshots/autocomplete.png" /></div>
-<div class="notification comment"><img src="http://github.com/jimbojw/10k/raw/master/screenshots/search.png" /></div>
+<div class="comment">
+<p><img src="http://github.com/jimbojw/10k/raw/master/screenshots/welcome.png" /></p>
+<p>Welcome</p>
 </div>
+<div class="comment">
+<p><img src="http://github.com/jimbojw/10k/raw/master/screenshots/autocomplete.png" /></p>
+<p>Autocompletion</p>
+</div>
+<div class="comment">
+<p><img src="http://github.com/jimbojw/10k/raw/master/screenshots/search.png" /></p>
+<p>Search results</p>
+</div>
+</div>
+
+## 10k personal search engine (10kse)
 
 [My submission](http://10k.aneventapart.com/Entry/251) for the [10k apart contest](http://10k.aneventapart.com/).
 
