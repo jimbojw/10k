@@ -1,6 +1,6 @@
 ## 10k personal search engine (10kse)
 
-<div style="float:right">
+<div class="right">
 <h3>Screen shots</h3>
 <div><img src="http://github.com/jimbojw/10k/raw/master/screenshots/welcome.png" /></div>
 <div><img src="http://github.com/jimbojw/10k/raw/master/screenshots/autocomplete.png" /></div>
