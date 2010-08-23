@@ -1,7 +1,7 @@
 ## 10k personal search engine (10kse)
 
 <div class="new-comments right">
-<div class="comment corner">
+<div class="notification corner">
 <p>A few examples of what the app looks like running.</p>
 <div class="comment"><img src="http://github.com/jimbojw/10k/raw/master/screenshots/welcome.png" /></div>
 <h3>welcome</h3>
