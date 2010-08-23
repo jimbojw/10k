@@ -40,8 +40,8 @@ the extensive use of other Google API's (such as maps) other entries have made.
 
 I have tested this in:
 
-* Firefox 3.6 on ubuntu
-* Cromium nightly on ubuntu (~Chrome 6)
+* Firefox 3.6
+* Cromium nightly (~Chrome 6)
 * IE 8 (with the app in uncompressed source form)
 * IE 9 preview 4
 
