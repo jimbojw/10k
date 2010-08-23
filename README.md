@@ -41,7 +41,7 @@ Building requires these dependencies:
 * pngcrush - makes the data png file really tiny
 
 ### repository
-* [http://github.com/jimbojw/hexlib/](http://github.com/jimbojw/hexlib/)
+* [http://github.com/jimbojw/10k/](http://github.com/jimbojw/10k/)
 
 ### license
 
