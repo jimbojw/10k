@@ -11,6 +11,9 @@ var
 	// trie implementation
 	trie = tenk.trie,
 	
+	// levenshtein distance search
+	levenshtein = tenk.levenshtein,
+	
 	// word data, trie instance, and count of urls
 	data,
 	trieobj,
@@ -39,7 +42,14 @@ function suggest(query) {
 	}
 	
 	// return first few trie matches
-	return trieobj.match(query).slice(0,10);
+	var result = trieobj.match(query).slice(0,10);
+	
+	// if there were no matches, try the levenshtein distance search
+	if (!result.length && levenshtein) {
+		result = levenshtein.call(trieobj, query, 2);
+	}
+	
+	return result;
 	
 }
 
