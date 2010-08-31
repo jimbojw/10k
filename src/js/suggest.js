@@ -42,14 +42,14 @@ function suggest(query) {
 	}
 	
 	// return first few trie matches
-	var result = trieobj.match(query).slice(0,10);
+	var result = trieobj.match(query);
 	
 	// if there were no matches, try the levenshtein distance search
 	if (!result.length && levenshtein) {
 		result = levenshtein.call(trieobj, query, 2);
 	}
 	
-	return result;
+	return result.slice(0,10);
 	
 }
 
