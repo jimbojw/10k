@@ -7,9 +7,9 @@
  * search for matching strings up to the specified levenshtein distance.
  * @param {string} s The string to match.
  * @param {int} dist The maximum allowable levenshtein distance.
- * @return {array} A sorted list of matching strings (may be empty).
+ * @return {array} A list of matching strings sorted by distance, then alphanumerically (may be empty).
  */
-function levenshtein(s, dist) {
+function levenshtein(s, tolerance) {
 	
 	s = s.toLowerCase();
 	
@@ -24,16 +24,12 @@ function levenshtein(s, dist) {
 		// matching strings found
 		matches = {},
 		
-		// arrayified matches
-		result = [],
-		count = 0,
-		
 		// queue of nodes to scan
 		queue = [
 			[
 				this.data, // node
 				"",        // prefix
-				dist,      // distance
+				tolerance, // distance
 				0          // position
 			]
 		],
@@ -44,7 +40,12 @@ function levenshtein(s, dist) {
 		prefix,
 		pos,
 		ch,
-		k;
+		k,
+		i;
+	
+	for (i = 0; i <= tolerance; i++) {
+		matches[i] = {};
+	}
 	
 	while (queue.length) {
 		
@@ -59,7 +60,7 @@ function levenshtein(s, dist) {
 			if (node.$) {
 				
 				// at end of string, add legit word
-				matches[prefix] = true;
+				matches[dist][prefix] = 1;
 				
 			}
 			
@@ -135,11 +136,42 @@ function levenshtein(s, dist) {
 		
 	}
 	
-	for (k in matches) {
-		result[count++] = k;
-	}
+	var
+		
+		// iteration vars
+		row,
+		list,
+		count,
+		
+		// arrayified result
+		result = [],
+		total = 0,
+		
+		// all seen words so far
+		all = {},
+		
+		// push function
+		push = [].push;
 	
-	result.sort();
+	// collect sorted matches
+	for (i = tolerance; i >= 0; i--) {
+		
+		row = matches[i];
+		list = [];
+		count = 0;
+		
+		for (k in row) {
+			if (!all[k]) {
+				list[count++] = k;
+				all[k] = 1;
+			}
+		}
+		
+		list.sort();
+		
+		push.apply(result, list);
+		
+	}
 	
 	return result;
 	
