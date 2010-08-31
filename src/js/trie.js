@@ -1,7 +1,7 @@
 /**
  * trie.js
  */
-(function(tenk,$,undefined){
+(function(tenk,undefined){
 
 /**
  * implementation of the add member.
@@ -266,5 +266,5 @@ function trie(data) {
 // exports
 tenk.trie = trie;
 
-})(window['10kse'],jQuery);
+})(window['10kse']);
 
