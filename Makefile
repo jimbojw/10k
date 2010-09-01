@@ -11,6 +11,7 @@ JS_FILES = \
 	${SRC_DIR}/js/menu.js\
 	${SRC_DIR}/js/prefs.js\
 	${SRC_DIR}/js/trie.js\
+	${SRC_DIR}/js/levenshtein.js\
 	${SRC_DIR}/js/scanner.js\
 	${SRC_DIR}/js/indexer.js\
 	${SRC_DIR}/js/bookmarklet.js\
