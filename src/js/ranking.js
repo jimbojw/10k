@@ -323,6 +323,9 @@ function proximity(ids, terms, type, recordcache) {
 		// inverted index pointing positions to terms
 		index,
 		
+		// longest substring found so far
+		longest,
+		
 		// iteration vars
 		i,
 		l,
