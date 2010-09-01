@@ -220,7 +220,7 @@ $(new Function(js));
 /**
  * trie.js
  */
-(function(tenk,$,undefined){
+(function(tenk,undefined){
 
 /**
  * implementation of the add member.
@@ -325,6 +325,8 @@ function match(s) {
 
 /**
  * creates a trie around a given data structure.
+ * @param {object} data Trie data.
+ * @return {object} A trie for the given data.
  */
 function trie(data) {
 	
@@ -340,7 +342,191 @@ function trie(data) {
 // exports
 tenk.trie = trie;
 
-})(window['10kse'],jQuery);
+})(window['10kse']);
+
+/**
+ * levenshtein.js - implements searching a trie for matches by levenshtein distance
+ */
+(function(tenk,undefined){
+
+/**
+ * search for matching strings up to the specified levenshtein distance.
+ * @param {string} s The string to match.
+ * @param {int} dist The maximum allowable levenshtein distance.
+ * @return {array} A list of matching strings sorted by distance, then alphanumerically (may be empty).
+ */
+function levenshtein(s, tolerance) {
+	
+	s = s.toLowerCase();
+	
+	var
+		
+		// length of string to match
+		len = s.length,
+		
+		// char buffer
+		buf = s.split(''),
+		
+		// matching strings found
+		matches = {},
+		
+		// queue of nodes to scan
+		queue = [
+			[
+				this.data, // node
+				"",        // prefix
+				tolerance, // distance
+				0          // position
+			]
+		],
+		
+		// iteration vars
+		item,
+		node,
+		prefix,
+		pos,
+		ch,
+		k,
+		i;
+	
+	for (i = 0; i <= tolerance; i++) {
+		matches[i] = {};
+	}
+	
+	while (queue.length) {
+		
+		item = queue.shift();
+		node = item[0];
+		prefix = item[1];
+		dist = item[2];
+		pos = item[3];
+		
+		if (pos === len) {
+			
+			if (node.$) {
+				
+				// at end of string, add legit word
+				matches[dist][prefix] = 1;
+				
+			}
+			
+			if (dist > 0) {
+				
+				for (k in node) {
+					
+					// allow longer words if we can tolerate more distance
+					queue[queue.length] = [
+						node[k],
+						prefix + k,
+						dist - 1,
+						pos
+					];
+					
+				}
+				
+			}
+			
+		} else {
+			
+			ch = buf[pos];
+			
+			if (dist > 0) {
+				
+				// try skipping this letter (letter missing)
+				queue[queue.length] = [
+					node,
+					prefix,
+					dist - 1,
+					pos + 1
+				];
+				
+				for (k in node) {
+					
+					if (k !== ch) {
+						
+						// letter mis-match
+						queue[queue.length] = [
+							node[k],
+							prefix + k,
+							dist - 1,
+							pos + 1
+						];
+						
+					}
+					
+					// letter added
+					queue[queue.length] = [
+						node[k],
+						prefix + k,
+						dist - 1,
+						pos
+					];
+					
+				}
+				
+			}
+			
+			if (node[ch]) {
+				
+				// letter match
+				queue[queue.length] = [
+					node[ch],
+					prefix + ch,
+					dist,
+					pos + 1
+				];
+				
+			}
+			
+		}
+		
+	}
+	
+	var
+		
+		// iteration vars
+		row,
+		list,
+		count,
+		
+		// arrayified result
+		result = [],
+		total = 0,
+		
+		// all seen words so far
+		all = {},
+		
+		// push function
+		push = [].push;
+	
+	// collect sorted matches
+	for (i = tolerance; i >= 0; i--) {
+		
+		row = matches[i];
+		list = [];
+		count = 0;
+		
+		for (k in row) {
+			if (!all[k]) {
+				list[count++] = k;
+				all[k] = 1;
+			}
+		}
+		
+		list.sort();
+		
+		push.apply(result, list);
+		
+	}
+	
+	return result;
+	
+}
+
+// exports
+tenk.levenshtein = levenshtein;
+
+})(window['10kse']);
 
 /**
  * scanner.js - responsible for extracting potentially interesting content from the page.
@@ -1291,6 +1477,9 @@ function proximity(ids, terms, type, recordcache) {
 		// inverted index pointing positions to terms
 		index,
 		
+		// longest substring found so far
+		longest,
+		
 		// iteration vars
 		i,
 		l,
@@ -1632,6 +1821,9 @@ var
 	// trie implementation
 	trie = tenk.trie,
 	
+	// levenshtein distance search
+	levenshtein = tenk.levenshtein,
+	
 	// word data, trie instance, and count of urls
 	data,
 	trieobj,
@@ -1660,7 +1852,14 @@ function suggest(query) {
 	}
 	
 	// return first few trie matches
-	return trieobj.match(query).slice(0,10);
+	var result = trieobj.match(query);
+	
+	// if there were no matches, try the levenshtein distance search
+	if (!result.length && levenshtein) {
+		result = levenshtein.call(trieobj, query, 2);
+	}
+	
+	return result.slice(0,10);
 	
 }
 

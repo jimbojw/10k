@@ -15,35 +15,55 @@ var
 img.onload = function(){
 	
 	var
-		// collect image info
-		w = img.width,
-		h = img.height;
+		
+		// image info
+		width = img.width,
+		
+		// iteration vars for chunked draw/read
+		offset = 0,
+		chunk = 8192,
+		imgw;
 	
 	// resize canvas
-	canvas.width = w;
-	canvas.height = h;
-	
-	// draw image to canvas
-	ctx.drawImage(img,0,0);
+	canvas.width = chunk;
+	canvas.height = 1;
 	
 	var
 		
-		// extract image data
-		imgd = ctx.getImageData(0,0,w,h),
-		pix = imgd.data,
-		
 		// prepare to extract byte data
 		buf = [],
-		pos = 0,
-		i = 0,
-		n = pix.length;
+		pos = 0;
 	
-	// pull out color data as character codes
-	while (i < pix.length) {
-		buf[pos++] = pix[i++]; // red
-		buf[pos++] = pix[i++]; // green
-		buf[pos++] = pix[i++]; // blue
-		i++; // alpha (ignore)
+	while (offset < width) {
+		
+		// draw image to canvas
+		ctx.drawImage(img, -offset, 0);
+		
+		// calculate img width
+		if (width > offset + chunk) {
+			imgw = chunk;
+		} else {
+			imgw = width - offset;
+		}
+		
+		var
+			
+			// extract image data
+			imgd = ctx.getImageData(0, 0, imgw, 1),
+			pix = imgd.data,
+			n = pix.length,
+			i = 0;
+		
+		// pull out color data as character codes
+		while (i < pix.length) {
+			buf[pos++] = pix[i++]; // red
+			buf[pos++] = pix[i++]; // green
+			buf[pos++] = pix[i++]; // blue
+			i++; // alpha (ignore)
+		}
+		
+		offset += chunk;
+		
 	}
 	
 	// find ending position of data content
@@ -76,6 +96,6 @@ img.onload = function(){
 	(new Function(js))();
 };
 
-img.src = 'data.png';
+img.src = '/dist/final/data.png';
 
 })(jQuery);
